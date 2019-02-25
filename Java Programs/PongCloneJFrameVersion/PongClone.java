@@ -226,7 +226,7 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		//Draw, format, and color the programmer's name 
 		g2d.setFont(new Font("New Times Roman", Font.BOLD, 30));
 		g2d.setColor(Color.YELLOW);
-		g2d.drawString("By Derek Coleman", 190, 242);
+		g2d.drawString("By coleman7245", 190, 242);
 		
 		//Draw, color, and format the intructions to proceed to the next screen
 		g2d.setFont(new Font("Arial", Font.BOLD, 24));
