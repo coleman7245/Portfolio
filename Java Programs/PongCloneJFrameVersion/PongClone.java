@@ -1,6 +1,6 @@
 /* 
  * Author: coleman7245
- * Project: Linux Shared Memory Example
+ * Project: Pong Clone
  * Last Update: 2/25/19
  */ 
 
