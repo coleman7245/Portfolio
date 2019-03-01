@@ -1,6 +1,6 @@
 #Author: coleman7245
-#Project: 
-#Date: 2/25/19
+#Project: Find the maximum value in the array.
+#Date: 3/1/19
 
 .data #Data section
 
