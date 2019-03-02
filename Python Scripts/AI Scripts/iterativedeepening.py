@@ -19,27 +19,35 @@ def main(args):
     #Print the title of the algorithm and the puzzle being used.
     print('Depth-Limited Search Solution with 8 blocks:\n')
     #Find the correct path for the sliding block puzzle using the depth-limited search.
-    path_8p = depthLimitedSearch(startState_8p, goalState_8p, actionF_8p, takeActionF_8p, 15)
+    path_8p = depthLimitedSearch(startState_8p, goalState_8p, actionsF_8p, takeActionF_8p, 15)
     #Print the path of the solution
     printPath_8p(startState_8p, goalState_8p, path_8p)
+    #Print the dividing line.
+    print()
     #Print the title of the algorithm and the puzzle being used.
     print('Iterative-deepening Search Solution with 8 blocks:\n')
     #Find the correct path for the sliding block puzzle using the iterative-deepening search.
-    path_8p = iterativeDeepeningSearch(startState_8p, goalState_8p, takeActionF_8p, 15)
+    path_8p = iterativeDeepeningSearch(startState_8p, goalState_8p, actionsF_8p, takeActionF_8p, 15)
     #Print the path of the solution
     printPath_8p(startState_8p, goalState_8p, path_8p)
+    #Print the dividing line.
+    print()
     #Print the title of the algorithm and the puzzle being used.
     print('Depth-Limited Search Solution with 15 Pegs:\n')
     #Find the correct path for the peg puzzle using depth-limited search.
     path_peg15 = depthLimitedSearch(startState_peg15, goalState_peg15, actionsF_peg15, takeActionF_peg15, 15)
     #Print the path of the solution.
     printPath_peg15(startState_peg15, goalState_peg15, path_peg15)
+    #Print the dividing line.
+    print()
     #Print the title of the algorithm and the puzzle being used.
     print('\nIterative-deepening Search Solution with 15 Pegs:\n')
     #Find the correct path of the peg puzzle using iterative-deepening search.
     path_peg15 = iterativeDeepeningSearch(startState_peg15, goalState_peg15, actionsF_peg15, takeActionF_peg15, 15)
     #Print the path of the solution.
     printPath_peg15(startState_peg15, goalState_peg15, path_peg15)
+	#Print the dividing line.
+    print()
 	
 	#Create a random goal state for the peg puzzle.
     goalState_peg15 = randomGoalState_peg15(startState_peg15, actionsF_peg15, takeActionF_peg15, 20)
@@ -55,6 +63,8 @@ def main(args):
     print('Iterative Deepening Search Solution with 8 Pieces in Random States:')
     #Print the path of the solution.
     printPath_8p(startState_8p, goalState_8p, path_8p)
+    #Print the dividing line.
+    print()
     #Print the title of the algorithm and the puzzle being used.
     print('Iterative Deepening Search Solution with 15 Pieces in Random States:')
     #Print the path of the solution.
@@ -89,7 +99,7 @@ def findBlank_8p(state):
         return 'Blank not found!'
 
 #Method Summary: Create a list of possible actions given the current state.        
-def actionsF_8p(state, findBlankF):
+def actionsF_8p(state):
     
     #Method Summary: Find the blank space on the board.
     def findBlank_8p(state):
