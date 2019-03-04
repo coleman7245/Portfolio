@@ -1,7 +1,7 @@
 /*
  * Author: coleman7245
  * Project: Bound Buffer Example
- * Last Update: 2/26/19
+ * Last Update: 3/4/19
  */
  
 public class Node<T>
@@ -9,36 +9,37 @@ public class Node<T>
 	/*Variables*/
 	Node<T> next; //The next node after this one.
 	T data; //The data contained within the node.
-	int location;
+	int location; //The location of the Node.
 	
 	/*Constructors*/
-	//Sets data with the parameters and leaves the next and previous nodes as null.
+	//Method Summary: Sets data with the parameters and leaves the next and previous nodes as null.
 	public Node(T d)
 	{
-		setData(d); //Sets the data with the firstg parameter.
-		setNext(null); //Sets the next node to null.
+		data = d; //Sets the data with the firstg parameter.
+		next = null; //Sets the next node to null.
 	}
 	
-	//Sets the data, next node and previous node with the parameters.
+	//Method Summary: Sets the data, next node and previous node with the parameters.
 	public Node(T d, Node<T> n)
 	{
-		setData(d); //Sets the data with the first parameter.
-		setNext(n); //Sets the next node with the second parameter.
+		data = d; //Sets the data with the first parameter.
+		next = n; //Sets the next node with the second parameter.
 	}
 	
 	/*Mutators*/
-	//Sets the data to the parameter.
+	//Method Summary: Sets the data to the parameter.
 	public void setData(T d)
 	{
 		data = d; //Set data with the first and only parameter.
 	}
 	
+	//Method Summary: Sets the location of the Node.
 	public void setLocation(int l)
 	{
-		location = l;
+		location = l; //Sets the location with the given parameter.
 	}
 	
-	//Sets the next node to the parameter.
+	//Method Summary: Sets the next node to the parameter.
 	public void setNext(Node<T> n)
 	{
 		next = n; //Sets the next node to the first and only parameter.
@@ -46,18 +47,19 @@ public class Node<T>
 	/*End of Mutators*/
 	
 	/*Accessors*/
-	//Returns the data within the node.
+	//Method Summary: Returns the data within the node.
 	public T getData()
 	{
 		return data; //Returns the data.
 	}
 	
+	//Method Summary: Gets the location of this Node.
 	public int getLocation()
 	{
-		return location;
+		return location; //Returns the location of this Node.
 	}
 	
-	//Returns the next node after this one.
+	//Method Summary: Returns the next node after this one.
 	public Node<T> getNext()
 	{
 		return next; //Returns the next node.
