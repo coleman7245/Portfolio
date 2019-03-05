@@ -1,7 +1,7 @@
 /* 
- * Author: coleman7245
+ * Author: Derek Coleman
  * Project: Linux Shared Memory Example
- * Last Update: 2/25/19
+ * Last Update: 3/4/19
  */ 
  
 Description of Files:
