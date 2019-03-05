@@ -1,11 +1,12 @@
 /* 
- * Author: coleman7245
+ * Author: Derek Coleman
  * Project: Linux Shared Memory Example
- * Last Update: 2/25/19
+ * Last Update: 3/4/19
  */ 
 
-#include "FileReader.h"
+#include "FileReader.h" //Include the FileReader header file.
 
+//Method Summary: Gets the file size of an open file.
 int getFileSize(FILE *file)
 {
 	fseek(file, 0, SEEK_END); //Seek the end of the file.
@@ -15,12 +16,13 @@ int getFileSize(FILE *file)
 	return size; //Return the estimated size.
 }
 
-float *readFile(FILE *file, int *size)
+//Method Summary: Reads an open file 
+float * readFile(FILE *file, int *size)
 {
 	int pos = 0; //Position in the array of integers.
 	int file_size = getFileSize(file); //Retrieve the size of the file.
 	int real_size = 0; //The number of elements in the array of integers.
-	char line[100];
+	char line[100]; //Store the line of an input read.
 	
 	float *numbers = malloc(file_size * sizeof(int)); //Allocate the memory for the integer array.
 	
@@ -29,7 +31,7 @@ float *readFile(FILE *file, int *size)
 		return NULL; //Return NULL.
 	}
 	
-	float current_num = 0;
+	float current_num = 0; //Stores the current number from the file.
 	
 	while (!feof(file) && pos < file_size) //While the file position is not at the end, and the position is less than the size, do...
 	{
@@ -38,8 +40,8 @@ float *readFile(FILE *file, int *size)
 			break; //Break out of the loop.
 		}
 		
-		sscanf(line, "%f", &current_num);
-		numbers[pos] = current_num;
+		sscanf(line, "%f", &current_num); //Read the input.
+		numbers[pos] = current_num; //Store the number in the array.
 		real_size++; //Increment the number of elements in the array of integers.
 		pos++; //Increment the position within the array.
 	}
