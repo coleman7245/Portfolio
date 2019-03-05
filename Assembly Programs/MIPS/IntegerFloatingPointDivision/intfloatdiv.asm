@@ -1,6 +1,6 @@
-# Name: coleman7245
+# Name: Derek Coleman
 # Project: Integer/Floating-point Division
-# Last Update: 2/25/19
+# Last Update: 3/5/19
 
 .text
 .globl main

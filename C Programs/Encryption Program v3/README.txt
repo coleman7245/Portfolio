@@ -1,6 +1,6 @@
-//Author: coleman7245
+//Author: Derek Coleman
 //Project: Encryption Program
-//Last Edit: Friday, February 14, 2019
+//Last Update: 3/5/19
 
 This program contains three c files and two header files: 
 

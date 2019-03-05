@@ -1,6 +1,6 @@
 ; Floating Point Conversion Complete
-; Author: coleman7245
-; Last Update: 3/1/19
+; Author: Derek Coleman
+; Last Update: 3/5/19
 ;
 ; Description: Implements the manipulation of half precision (16-bit) floating point numbers
 

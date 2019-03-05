@@ -1,7 +1,7 @@
 ;; File:        Stack Protocol Example
 ;; Description: Adheres to stack protocol with its functions.
-;; Author:      coleman7245
-;; Date:        3/1/19
+;; Author:      Derek Coleman
+;; Date:        3/5/19
 
            .ORIG   x3000
             BR     MAIN              ; Branch to main 
