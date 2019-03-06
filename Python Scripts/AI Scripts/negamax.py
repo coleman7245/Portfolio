@@ -1,6 +1,6 @@
-#Author: coleman7245
+#Author: Derek Coleman
 #Project: Negamax Tic-Tac-Toe Challenge
-#Last Edit: 3/3/19
+#Last Update: 3/6/19
 
 #Method Summary: The main method of execution.
 def main(args):

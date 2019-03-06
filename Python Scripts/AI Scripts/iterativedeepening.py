@@ -1,6 +1,6 @@
-#Author: coleman7245
+#Author: Derek Coleman
 #Project: Iterative Deepening vs Depth Limited Search
-#Last Edit: 3/2/19
+#Last Update: 3/6/19
 
 #Import the random package for generate random numbers.
 import random

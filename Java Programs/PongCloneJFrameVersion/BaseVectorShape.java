@@ -1,21 +1,26 @@
 /* 
- * Author: coleman7245
+ * Author: Derek Coleman
  * Project: Pong Clone
- * Last Update: 2/25/19
+ * Last Update: 3/6/19
  */ 
 
 import java.awt.*;
 
+/* Class Declaration */
 public class BaseVectorShape
 {	
-	//Variables
-	private double x, y;
-	private Shape shape;
-	private boolean alive;
-	private double velX, velY;
-	private double moveAngle, faceAngle;
+	/* Class Attributes */
+	private double x; //x: position on the 2-D plane's x-axis.
+	private double y; //y: position on the 2-D plane's y-axis.
+	private Shape shape; //shape: The basic shape of the vector shape.
+	private boolean alive; //alive: Checks to see if the shape is to be rendered or not.
+	private double velX; //velX: Velocity of the shape on the x-axis.
+	private double velY; //velY: Velocity of the shape on the y-axis.
+	private double moveAngle; //moveAngle: The direction of the shape's movement.
+	private double faceAngle; //faceAngle: The direction that the shape is facing.
 	
-	//default constructor
+	/* Constructors */
+	//Method Summary: The default constructor.
 	BaseVectorShape()
 	{
 		setShape(null);
@@ -28,7 +33,7 @@ public class BaseVectorShape
 		setFaceAngle(0.0);
 	}
 	
-	//mutators
+	/* Set Methods */
 	public void setShape(Shape shape)
 	{
 		this.shape = shape;
@@ -99,7 +104,7 @@ public class BaseVectorShape
 		this.faceAngle = faceAngle;
 	}
 	
-	//accessor methods
+	/* Get Methods */
 	public Shape getShape()
 	{
 		return shape;

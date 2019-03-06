@@ -1,6 +1,6 @@
-#Author: coleman7245
+#Author: Derek Coleman
 #Project: Learning Towers of Hanoi through Reinforcement
-#Last Edit: 3/4/19
+#Last Update: 3/6/19
 
 #Import the copy package for copying methods.
 import copy

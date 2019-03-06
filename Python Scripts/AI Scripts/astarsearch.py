@@ -1,6 +1,6 @@
-#Author: coleman7245
+#Author: Derek Coleman
 #Project: A* Search Experiment
-#Last Edit: 3/1/19
+#Last Update: 3/6/19
 
 #include the random class
 import random

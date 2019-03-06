@@ -1,7 +1,7 @@
 /* 
- * Author: coleman7245
+ * Author: Derek Coleman
  * Project: Pong Clone
- * Last Update: 2/25/19
+ * Last Update: 3/6/19
  */ 
 
 import java.awt.*;
@@ -17,27 +17,22 @@ import javax.sound.sampled.*;
 import javax.sound.midi.*;
 import javax.swing.JFrame;
 
+/* Class Declaration */
 public class PongClone extends Canvas implements Runnable, MouseListener, MouseMotionListener
 {
 	//Screen variables
-	int screenWidth = 640;
-	int screenHeight = 480;
+	int screenWidth = 640; //screenWidth: The width of the screen.
+	int screenHeight = 480; //screenHeight: The height of the screen.
 	
-	/*TEST: Score constants
-	final int USER_SCORE_X:
-	final int AI_*/
-	
-	//Variable for checking if a midi stream is running or not
-	boolean isRunning;
+	boolean isRunning; //Variable for checking if a midi stream is running or not.
    
-   //Boolean variable for checking if the ball is in play or not.
-   boolean ballInPlay;
-   //Countdown clock that decrements before the ball is in play.
-   int count;
-   int countdown;
+	boolean ballInPlay; //Boolean variable for checking if the ball is in play or not.
 	
-	//Game state variable
-	int gameState;
+    //Countdown clock that decrements before the ball is in play.
+    int count;
+    int countdown;
+	
+	int gameState; //Game state variable
 	
 	//Game state constants
 	final int GAME_MENU = 0;
@@ -76,7 +71,7 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 	String gong = "gong.wav";
 	String explosion = "explode.wav";
 	String musicFile = "battlestargalactica.mid";
-   Clip audioClip;
+	Clip audioClip;
    
    private JFrame gameWindow;
 	
@@ -566,38 +561,40 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		repaint();
 	}
 	
+	//Method Summary: 
 	public void mouseClicked(MouseEvent e)
 	{
 		//Run the game with a click of the mouse
 		if (gameState == GAME_MENU)
 		{
-			gameState = GAME_RUNNING;
-			repaint();
+			gameState = GAME_RUNNING; //Signal that the game needs to run.
+			repaint(); //Render the frame.
 		}
 		
 		//Exit the game over screen with a click of the mouse
 		if (gameState == GAME_OVER)
 		{
-			gameState = GAME_MENU;
-			repaint();
+			gameState = GAME_MENU; //Signal that the game menu needs to be displayed.
+			repaint(); //Render the frame.
 		}
 	}
 	
-	public void mouseEntered(MouseEvent e)
-	{}
+	//Method Summary: Runs code if a mouse event occured. Not used for this program.
+	public void mouseEntered(MouseEvent e) {}
 	
-	public void mouseExited(MouseEvent e)
-	{}
+	//Method Summary: Runs code if a mouse event occured. Not used for this program.
+	public void mouseExited(MouseEvent e) {}
 	
-	public void mousePressed(MouseEvent e)
-	{}
+	//Method Summary: Runs code if a mouse event occured. Not used for this program.
+	public void mousePressed(MouseEvent e) {}
 	
-	public void mouseReleased(MouseEvent e)
-	{}
+	//Method Summary: Runs code if a mouse event occured. Not used for this program.
+	public void mouseReleased(MouseEvent e) {}
    
+   //Method Summary: The main method of execution.
    public static void main(String[] args)
    {
-      PongCloneFinal game = new PongCloneFinal();
-      game.start();
+      PongCloneFinal game = new PongCloneFinal(); //Create a thread for this game.
+      game.start(); //Start the thread.
    }
 }

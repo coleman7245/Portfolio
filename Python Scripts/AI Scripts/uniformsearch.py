@@ -1,6 +1,6 @@
-#Author: coleman7245
+#Author: Derek Coleman
 #Project: Depth-First Search vs. Breadth-First Search
-#Last Edit: Thursday, February 14, 2019
+#Last Update: 3/6/19
 
 #For copying the successors
 import copy
