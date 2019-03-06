@@ -1,9 +1,9 @@
-//Author: coleman7245
+//Author: Derek Coleman
 //Project: Encryption Program
-//Last Edit: Friday, February 14, 2019
+//Last Update: 3/6/19
 
-#include<stdlib.h>
-#include<stdio.h>
+#include<stdlib.h> //Include the C standard library header.
+#include<stdio.h> //Include the C standard IO header.
 
 typedef struct
 {
@@ -16,8 +16,8 @@ typedef struct
 	int turnaround_time; //The total completetion time of a process.
 	int duration_left; //The burst duration left during its run.
 	int num_of_tickets; //The total number of tickets the process holds.
-	int *upper_bound_tickets;
-	int *lower_bound_tickets;
+	int *upper_bound_tickets; //The upper tier of tickets in the lottery.
+	int *lower_bound_tickets; //The lower tier of tickets in the lottery.
 	
 } Process; //Struct for storing process information.
 
@@ -32,17 +32,17 @@ void SJFPre(Process *sjf_pre_processes, int size); //Schedules the list of proce
 void PriorityScheduling(Process *priority_processes, int size); //Schedules the list of processes according to their individual priority.
 void LotteryScheduling(Process *lottery_processes, int size, int random_seed); //Schedules the list of processes using a lottery system.
 
-/*Main function*/
+//Method Summary: The main method of execution.
 int main(int argc, char** argv)
 {
 	if (argc != 3) //If there are two arguments present, then...
 	{
-		return 0; //Return false;
+		return 0; //Return false, indicating failure;
 	}
 	
 	/*Variables*/
-	FILE *input_file = fopen(argv[1], "rb");
-	int size = findNewLines(input_file);
+	FILE *input_file = fopen(argv[1], "rb"); //Open the file with the filename in the argument list.
+	int size = findNewLines(input_file); //Find the size of the file.
 	Process *data = malloc(sizeof(Process) * size); //Allocates memory for an array of processes.
 	int r_seed = atoi(argv[2]); //The random seed for lottery shceduling.
 	
@@ -69,18 +69,18 @@ int main(int argc, char** argv)
 	
 	readFile(input_file, size, data); //Create an array of processes by invoking the readFile function.
 	
-	fclose(input_file);
+	fclose(input_file); //Close the input file.
 	
 	if (data == NULL) //If the readFile function failed to return an array of processes, then...
 	{
-		printf("Read of file failed!\n"); 
-		return 0; //Return false;
+		printf("Read of file failed!\n"); //Print an error message, specifying the file.
+		return 0; //Return false, indicating failure.
 	}
 	
 	if (!displayMenu(data, size, r_seed)) //If the menu wasn't displayed, then...
 	{
-		printf("Failed to display menu!\n");
-		return 0; //Return false.
+		printf("Failed to display menu!\n"); //Print an error message, specifying the file.
+		return 0; //Return false, indicating failure.
 	}
 	
 	for (int pos = 0; pos < size; pos++) //From the beginning to the end of the file...
@@ -96,6 +96,7 @@ int main(int argc, char** argv)
 }
 
 /*Auxiliary functions*/
+//Method Summary: Reads the contents of the input file.
 void readFile(FILE *input_file, int size, Process *processes)
 {
 	/*Variable*/
@@ -111,9 +112,9 @@ void readFile(FILE *input_file, int size, Process *processes)
 				{
 					break; //Break out of the loop, since there is no further input.
 				}
-				else
+				else //An unspecified error occured.
 				{
-					return;
+					return; //Return to the calling function.
 				}
 			}
 		
@@ -124,13 +125,14 @@ void readFile(FILE *input_file, int size, Process *processes)
 	}
 }
 
+//Method Summary: Prints the characteristics of the processes in the process list.
 void printProcessInfo(Process *processes, int size, int option)
 {
 	/*Variables*/
 	double average_waiting_time = 0; //The average waiting time for a process.
 	double throughput = 0; //The throughput of the list of processes.
 	double average_turnaround_time = 0; //The average turnaround time for a process.
-	int choiceChar = (int)'y';
+	int choiceChar = (int)'y'; //Captures the menu choice from the user.
 	
 	//Displays menu titles for scheduling algorithms depending on what option is chosen.
 	switch(option)
@@ -184,6 +186,7 @@ void printProcessInfo(Process *processes, int size, int option)
 		
 		if ((pos + 1) % 10 == 0 && pos != 0 && (choiceChar == (int)'y' || choiceChar == (int)'Y'))
 		{
+			//List the first 10 processes before asking the user to continue.
 			printf("Press y to continue or any other key to finish the list.\n");
 			choiceChar = getchar();
 			choiceChar = getchar();
@@ -200,15 +203,16 @@ void printProcessInfo(Process *processes, int size, int option)
 	printf("============================================================\n\n"); //Border for formatting.
 }
 
+//Method Summary: Finds the new line characters in a file.
 int findNewLines(FILE *open_file)
 {
 	/*Variables*/
-	int size = 0;
-	int c = '\0';
+	int size = 0; //The number of lines in a file.
+	int c = '\0'; //Captures a character from the file stream.
 	
 	while (!feof(open_file)) //While the pointer is not at the end of the file...
 	{
-		if (!fread(&c, sizeof(char), 1, open_file))
+		if (!fread(&c, sizeof(char), 1, open_file)) //If the file read failed, then...
 		{
 			if (feof(open_file)) //If the end of file has been reached...
 			{
@@ -220,9 +224,9 @@ int findNewLines(FILE *open_file)
 			}
 		}
 		
-		if (c == '\n' || c == '\r')
+		if (c == '\n' || c == '\r') //If the character is a new line character, then...
 		{
-			size++;
+			size++; //Increment the number of lines.
 		}
 	}
 	
@@ -231,36 +235,38 @@ int findNewLines(FILE *open_file)
 	return size; //Return the size of the file.
 }
 
+//Method Summary: Displays the menu for the user.
 int displayMenu(Process *processes, int size, int random_seed)
 {
 	/*Variables*/
 	Process *current_list; //List of processes.
 	int option = 0; //Storage for menu options.
 	
-	current_list = malloc(sizeof(Process) * size);
+	current_list = malloc(sizeof(Process) * size); //Allocate memory for the current list of processes.
 		
-	if (current_list == (Process *)NULL) //If the SJFnonPre method failed, then...
+	if (current_list == NULL) //If the memory allocation failed, then...
 	{
 		return 0; //Return false;
 	}
 	
-	for (int pos = 0; pos < size; pos++)
+	for (int pos = 0; pos < size; pos++) //For every 
 	{
-		current_list[pos].lower_bound_tickets = malloc(sizeof(int) * size);
+		current_list[pos].lower_bound_tickets = malloc(sizeof(int) * size); //Allocate memory to the lower bound ticket list.
 		
 		if (current_list[pos].lower_bound_tickets == (int *)NULL) //If the SJFnonPre method failed, then...
 		{
-			return 0; //Return false;
+			return 0; //Return false, indicating failure;
 		}
 		
-		current_list[pos].upper_bound_tickets = malloc(sizeof(int) * size);
+		current_list[pos].upper_bound_tickets = malloc(sizeof(int) * size); //Allocate memory to the upper bound ticket list.
 			
-		if (current_list[pos].upper_bound_tickets == (int *)NULL) //If the SJFnonPre method failed, then...
+		if (current_list[pos].upper_bound_tickets == (int *)NULL) //If the memory allocation failed, then...
 		{
-			return 0; //Return false;
+			return 0; //Return false, indicating failure.;
 		}
 	}
 	
+	//Initialize a processor list meant to be displayed and altered by the scheduler algorithms.
 	do
 	{
 		for (int pos = 0; pos < size; pos++)
@@ -324,6 +330,7 @@ int displayMenu(Process *processes, int size, int random_seed)
 		
 	} while(option != 6); //While the user has chosen an option other than exit...
 	
+	//Free the memory of each process and set the ticket list pointers to null afterward.
 	for (int pos = 0; pos < size; pos++)
 	{
 		free(current_list[pos].lower_bound_tickets);
@@ -331,13 +338,15 @@ int displayMenu(Process *processes, int size, int random_seed)
 		free(current_list[pos].upper_bound_tickets);
 		current_list[pos].upper_bound_tickets = NULL;
 	}
-		
+	
+	//Free the memory of the processor list and set its pointer to null.
 	free(current_list);
 	current_list = NULL;
 	
-	return 1;
+	return 1; //Return 1, indicating success.
 }
 
+//Method Summary: First come, first serve algorithm that prioritizes the first process to enter the queue.
 void FCFS(Process *fcfs_processes, int size)
 {
 	/*Variables*/
@@ -456,6 +465,7 @@ void FCFS(Process *fcfs_processes, int size)
 	}
 }
 
+//Method Summary: Shortest job first algorithm that prioritizes the shortest job without preemption.
 void SJFnonPre(Process *sjf_non_pre_processes, int size)
 {
 	/*Variables*/
@@ -577,6 +587,7 @@ void SJFnonPre(Process *sjf_non_pre_processes, int size)
 	}
 }
 
+//Method Summary; The shortest job first algorithm that prioritizes the the shortest job first with preemption.
 void SJFPre(Process *sjf_pre_processes, int size)
 {
 	/*Variables*/
@@ -637,7 +648,6 @@ void SJFPre(Process *sjf_pre_processes, int size)
 			
 			current_pos = sjf_pre_pos; //The position of the currently running process is the sorting position.
 			sjf_pre_pos++; //Increment the sorting position.
-			//printf("1st for SJF-Pre: P%d\n", sjf_pre_processes[current_pos].pid);
 		}
 		else if (sjf_pre_processes[current_pos].duration_left <= 0) //Else, if the process has finished with the CPU, then...
 		{	
@@ -710,7 +720,7 @@ void SJFPre(Process *sjf_pre_processes, int size)
 						if (sjf_pre_processes[pos].burst_duration < sjf_pre_processes[current_pos].duration_left) //If the canidate process has less total maximum time duration than the currently running process has time duration left, then...
 						{
 							current_pos = pos; //Switch the current position to that of the canidate process.
-							swapped = 1;
+							swapped = 1; //Signal that swap has taken place.
 						}
 					}
 			}
@@ -727,7 +737,6 @@ void SJFPre(Process *sjf_pre_processes, int size)
 				
 				if (!isPresent) //If the currently running process was NOT already sorted, then...
 				{
-					//printf("Swapped P%d at sjf_pre_pos = %d with P%d at current_pos = %d\n", sjf_pre_processes[sjf_pre_pos].pid, sjf_pre_pos, sjf_pre_processes[current_pos].pid, current_pos);
 					//Swap out the process that is occupying the sorting position with that of the recently finished process.
 					temp = sjf_pre_processes[sjf_pre_pos];
 					sjf_pre_processes[sjf_pre_pos] = sjf_pre_processes[current_pos];
@@ -757,18 +766,13 @@ void SJFPre(Process *sjf_pre_processes, int size)
 			sjf_pre_processes[current_pos].turnaround_time++; //Increment the turnaround time for the process.
 		}
 		
-		/*if ((*sjf_pre_processes)[current_pos].duration_left < 0)
-		{
-			printf("HERE!!!!!\n");
-			printf("processes_left = %d\n", processes_left);
-		}*/
-		
 		time++; //Increment the time.
 		isPresent = 0; //Reset to false.
 		swapped = 0; //Reset to false.
 	}
 }
 
+//Method Summary: The priority scheduling algorithm that prioritizes processes with higher priority.
 void PriorityScheduling(Process *priority_processes, int size)
 {
 	/*Variables*/
@@ -886,16 +890,11 @@ void PriorityScheduling(Process *priority_processes, int size)
 			priority_processes[current_pos].turnaround_time++; //Increment the turnaround time for the process.
 		}
 		
-		/*if ((*priority_processes)[current_pos].duration_left < 0)
-		{
-			printf("HERE!!!!!\n");
-			printf("processes_left = %d\n", processes_left);
-		}*/
-		
 		time++; //Increment the time.
 	}
 }
 
+//Method Summary: Lottery scheduling algorithm that picks a process based on a randomized lottery system.
 void LotteryScheduling(Process *lottery_processes, int size, int random_seed)
 {
 	/*Variables*/
@@ -912,32 +911,30 @@ void LotteryScheduling(Process *lottery_processes, int size, int random_seed)
 	
 	srand((unsigned int)random_seed); //Set the random number generator with the random_seed parameter.
 	
-	for (int pos = 0; pos < size; pos++)
+	for (int pos = 0; pos < size; pos++) //For every process in the list...
 	{
-		for (int t_pos = 0; t_pos < size; t_pos++)
+		for (int t_pos = 0; t_pos < size; t_pos++) //For every ticket in the process...
 		{
-			if (lottery_processes[pos].upper_bound_tickets[t_pos] > highest_ticket)
+			if (lottery_processes[pos].upper_bound_tickets[t_pos] > highest_ticket) //If the current upper bound ticket is higher than the current highest ticket, then...
 			{
-				highest_ticket = lottery_processes[pos].upper_bound_tickets[t_pos];
+				highest_ticket = lottery_processes[pos].upper_bound_tickets[t_pos]; //Replace the previous highest ticket with the current ticket.
 			}
 			
-			if (lottery_processes[pos].lower_bound_tickets[t_pos] < lowest_ticket)
+			if (lottery_processes[pos].lower_bound_tickets[t_pos] < lowest_ticket) //If the current lower bound ticket is lower than the current lowest ticket, then...
 			{
-				lowest_ticket = lottery_processes[pos].lower_bound_tickets[t_pos];
+				lowest_ticket = lottery_processes[pos].lower_bound_tickets[t_pos]; //Replace the previous lowest ticket with the current ticket.
 			}
 		}
 	}
 	
 	while (processes_left > 0) //While the number of processes left is greater than 0...
 	{
-		//printf("processes_left = %d\n", processes_left);
-		
-		if (lot_pos == -1)
+		if (lot_pos == -1) //If the current postion within the lottery is the initial value, then...
 		{
 			do
 			{
 				winning_num = (rand() % (highest_ticket - lowest_ticket)) + lowest_ticket; //Set the winning lottery number with a random number.
-			} while (winning_num > highest_ticket || winning_num < lowest_ticket);
+			} while (winning_num > highest_ticket || winning_num < lowest_ticket); //Loop until the winning ticket is within bounds.
 			
 			for (int pos = 0; pos < size; pos++) //For the beginning of the old array, don't stop cycling through processes until the current position is equal or greater to irs size.
 			{
@@ -955,18 +952,18 @@ void LotteryScheduling(Process *lottery_processes, int size, int random_seed)
 					}
 			}
 			
-			for (int pos = 0; pos < size; pos++)
+			for (int pos = 0; pos < size; pos++) //For every process in the list...
 			{
 				if (lottery_processes[pos].num_of_tickets > most_tickets && lottery_processes[pos].pid != lottery_processes[winner_pos].pid) //If the current process has a greater amount of tickets than the highet number of tickets, then...
 					{
-						most_tickets = lottery_processes[pos].num_of_tickets;
+						most_tickets = lottery_processes[pos].num_of_tickets; //Set the most tickets to this process' number of tickets.
 						most_tickets_pos = pos; //Set the position of the process with the highest amount of tickets to that of the current process.
 					}
 			}
 			
 			for (int t_pos = 0; t_pos < size; t_pos++) //From the beginning to the end of the winning process' list of tickets...
 			{
-				if (lottery_processes[most_tickets_pos].lower_bound_tickets[t_pos] == 0 && lottery_processes[most_tickets_pos].upper_bound_tickets[t_pos] == 0)
+				if (lottery_processes[most_tickets_pos].lower_bound_tickets[t_pos] == 0 && lottery_processes[most_tickets_pos].upper_bound_tickets[t_pos] == 0) //If the process has no tickets at this position, then...
 				{
 					lottery_processes[most_tickets_pos].lower_bound_tickets[t_pos] = lottery_processes[winner_pos].lower_bound_tickets[t_pos]; //Add the winner's lower bound tickets to the process that carries the most tickets.
 					lottery_processes[most_tickets_pos].upper_bound_tickets[t_pos] = lottery_processes[winner_pos].upper_bound_tickets[t_pos]; //Add the winner's upper bound tickets to the process that carries the most tickets.
@@ -997,7 +994,7 @@ void LotteryScheduling(Process *lottery_processes, int size, int random_seed)
 			lottery_processes[winner_pos].turnaround_time++; //Increment the turnaround time for the process.
 			lot_pos = 0; //Set the sorting position to 0.
 		}
-		else if (lottery_processes[winner_pos].duration_left <= 0)
+		else if (lottery_processes[winner_pos].duration_left <= 0) //If the winning process has finish its task, then...
 		{
 			//Swap out the process that is occupying the sorting position with that of the recently finished process.
 			temp = lottery_processes[lot_pos]; 
@@ -1006,12 +1003,12 @@ void LotteryScheduling(Process *lottery_processes, int size, int random_seed)
 			lot_pos++; //Increment the sorting position.
 			processes_left--; //Decrement the number of processes left to run.
 		
-			most_tickets = 0;
+			most_tickets = 0; //Reset the most tickets to 0.
 			
 			do
 			{
 				winning_num = (rand() % (highest_ticket - lowest_ticket)) + lowest_ticket; //Set the winning lottery number with a random number.
-			} while (winning_num > highest_ticket || winning_num < lowest_ticket);
+			} while (winning_num > highest_ticket || winning_num < lowest_ticket); //Loop until the winning ticket is within bounds.
 			
 			for (int pos = 0; pos < size; pos++) //For the beginning of the old array, don't stop cycling through processes until the current position is equal or greater to irs size.
 			{
@@ -1030,20 +1027,20 @@ void LotteryScheduling(Process *lottery_processes, int size, int random_seed)
 					}
 			}
 				
-			if (processes_left > 1)
+			if (processes_left > 1) //If there are still processes left to run, then...
 			{
-				for (int pos = 0; pos < size; pos++)
+				for (int pos = 0; pos < size; pos++) //For every process in the list...
 				{
 					if (lottery_processes[pos].num_of_tickets > most_tickets && lottery_processes[pos].pid != lottery_processes[winner_pos].pid) //If the current process has a greater amount of tickets than the highet number of tickets, then...
 						{
-							most_tickets = lottery_processes[pos].num_of_tickets;
+							most_tickets = lottery_processes[pos].num_of_tickets; //Set the most tickets this the current process' number of tickets.
 							most_tickets_pos = pos; //Set the position of the process with the highest amount of tickets to that of the current process.
 						}
 				}
 				
 				for (int t_pos = 0; t_pos < size; t_pos++) //From the beginning to the end of the winning process' list of tickets...
 				{
-					if (lottery_processes[winner_pos].lower_bound_tickets[t_pos] != 0 && lottery_processes[winner_pos].upper_bound_tickets[t_pos] != 0)
+					if (lottery_processes[winner_pos].lower_bound_tickets[t_pos] != 0 && lottery_processes[winner_pos].upper_bound_tickets[t_pos] != 0) //If the winning process has tickets to give, then...
 					{
 						lottery_processes[most_tickets_pos].lower_bound_tickets[t_pos] = lottery_processes[winner_pos].lower_bound_tickets[t_pos]; //Add the winner's lower bound tickets to the process that carries the most tickets.
 						lottery_processes[most_tickets_pos].upper_bound_tickets[t_pos] = lottery_processes[winner_pos].upper_bound_tickets[t_pos]; //Add the winner's upper bound tickets to the process that carries the most tickets.
@@ -1051,7 +1048,7 @@ void LotteryScheduling(Process *lottery_processes, int size, int random_seed)
 						lottery_processes[winner_pos].lower_bound_tickets[t_pos] = 0; //Empty the lower ticket range of the winning process at this position.
 						lottery_processes[winner_pos].upper_bound_tickets[t_pos] = 0; //Empty the upper ticket range of the winning process at this position.
 					}
-					else if (lottery_processes[winner_pos].lower_bound_tickets[t_pos] == 0 && lottery_processes[winner_pos].upper_bound_tickets[t_pos] != 0)
+					else if (lottery_processes[winner_pos].lower_bound_tickets[t_pos] == 0 && lottery_processes[winner_pos].upper_bound_tickets[t_pos] != 0) //If the winning process only has upper bound tickets to give, then...
 					{
 						lottery_processes[most_tickets_pos].lower_bound_tickets[t_pos] = lottery_processes[winner_pos].lower_bound_tickets[t_pos]; //Add the winner's lower bound tickets to the process that carries the most tickets.
 						lottery_processes[most_tickets_pos].upper_bound_tickets[t_pos] = lottery_processes[winner_pos].upper_bound_tickets[t_pos]; //Add the winner's upper bound tickets to the process that carries the most tickets.
@@ -1102,15 +1099,6 @@ void LotteryScheduling(Process *lottery_processes, int size, int random_seed)
 			lottery_processes[winner_pos].duration_left--; //Decrement the time remaining for the process to finish its task.
 			lottery_processes[winner_pos].turnaround_time++; //Increment the turnaround time for the process.
 		}
-		
-		/*if ((*lottery_processes)[winner_pos].duration_left < 0)
-		{
-			printf("HERE!!!!!\n");
-			printf("(*lottery_processes)[%d].burst_duration = %d\n", winner_pos, (*lottery_processes)[winner_pos].burst_duration);
-			printf("processes_left = %d\n", processes_left);
-		}*/
-		
-		//printf("(*lottery_processes)[%d].duration_left = %d\n", winner_pos, (*lottery_processes)[winner_pos].duration_left);
 
 		time++; //Increment the time.
 	}
