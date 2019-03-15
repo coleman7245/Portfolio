@@ -1,7 +1,7 @@
 /* 
  * Author: Derek Coleman
  * Project: Pong Clone
- * Last Update: 3/13/19
+ * Last Update: 3/14/19
  */ 
 
 import java.awt.*;
@@ -29,13 +29,6 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
     //Countdown clock variables.
     int count;
     int countdown;
-	
-	//int gameState; //Game state variable
-	
-	//Game state constants
-	//final int GAME_MENU = 0;
-	//final int GAME_RUNNING = 1;
-	//final int GAME_OVER = 2;
 	
 	//Game state variables.
 	enum GameState {MENU, ROUND, OVER}; //Game states that include menu, round of play, and game over. Will feature an options menu soon.
@@ -131,8 +124,8 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		paddleAI.setPosition(295.0, 100.0);
 		
 		ball.setPosition(screenWidth / 2, screenHeight / 2); //Place the ball at the center of the screen.
-		ball.setVelocity((rand.nextDouble() % MAX_ANGLE + MIN_ANGLE) * 9.0, 
-			(rand.nextDouble() % MAX_ANGLE + MIN_ANGLE) * 9.0); //Start with a random ball velocity.
+		ball.setVelocity((rand.nextDouble() % MAX_ANGLE + MIN_ANGLE) * 5.0, 
+			(rand.nextDouble() % MAX_ANGLE + MIN_ANGLE) * 5.0); //Start with a random ball velocity.
 	
 		addMouseListener(this); //Add a mouse listener for mouse input events.
 		addMouseMotionListener(this); //Add a mouse motion listener for mouse motion events.
@@ -215,7 +208,7 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		//Draw, color, and format the intructions to proceed to the next screen.
 		g2d.setFont(new Font("Arial", Font.BOLD, 24));
 		g2d.setColor(Color.YELLOW);
-		g2d.drawString("Click the right mouse button to start", 120, 450);
+		g2d.drawString("Click a mouse button to start", 120, 450);
 	}
 	
 	//Method Summary: Draws, transforms, and colors the user paddle.
@@ -404,12 +397,9 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		
 			if (countdown == 0) //If the countdown has ended:
 			{
-				ball.setInPlay(true);
-				
-				Vector2 initialBallVelocity = new Vector2((rand.nextDouble() % MAX_ANGLE + MIN_ANGLE) * 10.0, 
-					(rand.nextDouble() % MAX_ANGLE + MIN_ANGLE) * 10.0); //Start with a random ball velocity.
-					
-				ball.setVelocity(initialBallVelocity.getX(), initialBallVelocity.getY()); //Set the velocity of the ball.
+				ball.setInPlay(true); //Set the ball into play.
+				ball.setVelocity((rand.nextDouble() % MAX_ANGLE + MIN_ANGLE) * 5.0, 
+					(rand.nextDouble() % MAX_ANGLE + MIN_ANGLE) * 5.0); //Set the velocity of the ball.
 			}
 			else //If the countdown hasn't ended yet:
 			{
