@@ -1,7 +1,7 @@
 /* 
  * Author: Derek Coleman
  * Project: Pong Clone
- * Last Update: 3/15/19
+ * Last Update: 3/21/19
  */ 
 
 import java.awt.*;
@@ -16,23 +16,39 @@ import java.io.*;
 import javax.sound.sampled.*;
 import javax.sound.midi.*;
 import javax.swing.JFrame;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.lang.String;
 
 /* Class Declaration */
 public class PongClone extends Canvas implements Runnable, MouseListener, MouseMotionListener
-{
-	final double MAX_ANGLE = Math.sqrt(2) / 2; //Maximum angle of the ball's starting trajectory.
-	final double MIN_ANGLE = -MAX_ANGLE; //Minimum angle of the ball's starting trajectory.
+{	
+	//Debug variables.
+	BufferedWriter out = null;
+	
+	String debugString = "";
 	
 	int screenWidth = 640; //screenWidth: The width of the screen.
 	int screenHeight = 480; //screenHeight: The height of the screen.
 	
     //Countdown clock variables.
-    int count;
-    int countdown;
+    int countdown; //countdown: The visible count before each round.
+    int count; //count: The current count in between each countdown decrement.
+    boolean hasReset; //countdownReset: Indicates if the countdown variables have been reset.
+    
+    //Time delay variables.
+    long startTime; //startTime: Stores the time started during transition screen.
+    long timeDelta; //timeDelta: The difference between the current time and the start time.
+	
+	//Player turn variables.
+	enum PlayerTurn {HUMAN, CPU}; //Player is either a human or an AI.
+	PlayerTurn playerTurn; //playerTurn: The current server at the start of the round.
 	
 	//Game state variables.
-	enum GameState {MENU, ROUND, OVER}; //Game states that include menu, round of play, and game over. Will feature an options menu soon.
-	GameState gameState; //The current game state.
+	enum GameState {MENU, PREROUND, ROUND, OVER}; //Game states that include menu, transition between rounds, round of play, and game over. Will feature an options menu soon.
+	GameState gameState; //gameState: The current game state.
+	boolean changeToMenu; //changeToMenu: Signals that the user wants to change from the game over screen to the menu.
+	boolean changeToPreround; //changeToPreround: Signals that the user wants to change from the menu to the game itself.
 	
 	//Buffer objects
 	Graphics2D g2d; //g2d: Draws the graphics of the app.
@@ -51,6 +67,7 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 	//Score variables
 	int userScore; //userScore: The player's win score.
 	int AIScore; //AIscore: The AI's win score.
+	int scoreLimit; //scoreLimit: The upper limit of any score.
 	
 	//Game loop and random number generator
 	Thread gameLoop; //gameLoop: The instance of the game itself.
@@ -60,7 +77,7 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 	AffineTransform identity = new AffineTransform(); //identity: Transforms the coordinates of a 2-D object.
 	
 	//Create audio objects
-	boolean songIsRunning;
+	boolean songIsRunning; //songIsRunning: Indicates if the MIDI song is currently playing.
 	AudioInputStream sample; //sample: Plays an audio clip.
 	Sequence song; //song: A MIDI song.
 	Sequencer sequencer; //sequencer: Plays a MIDI song.
@@ -97,16 +114,28 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 	//Method Summary: Initializes the class attrubutes to their default values.
 	public void initialize()
 	{
+		//Debug operations.
+		try
+		{
+			out = new BufferedWriter(new FileWriter("debug.txt"));
+		}
+		catch (IOException ioe) {}
+		catch (Exception e) {}
+		
 		songIsRunning = false; //The MIDI song doesn't run until the game is in play.
+		
+		startTime = 0; //Set the delay start time to 0.
+		timeDelta = 3; //Set the time delta to 3 to bypass the check when the application first starts.
 		
 		userScore = 0; //User score set to 0.
 		AIScore = 0; //AI score set to 0.
+		scoreLimit = 1; //Set the score limit to 1.
       
 		gameState = GameState.MENU; //Start the game state at the menu.
       
 		countdown = 3; //The time before each round is 3 seconds.
-		count = 150; //The program cycles through each tick at 150 increments.
-		ball.setInPlay(false); //Since the game starts out at the menu screen, the ball will not be in play yet.
+		count = 150; //Set the count to 150.
+		hasReset = true; //Indicate that there is no need to reset the paddle and ball variables.
 		
 		//Create back buffer
 		backbuffer = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB); //Initialize the back buffer with screen information.
@@ -119,13 +148,10 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		setSize(screenWidth, screenHeight); //Set the size of the game screen.
 		gameWindow.add(this); //Add the game to the JFrame window.
 		
-		//Place the paddles to their respective positions at the top and bottom of the game screen.
-		paddle.setPosition(295.0, 380.0);
-		paddleAI.setPosition(295.0, 100.0);
+		initializeBall(); //Place the ball in the appropriate position.
+		initializePaddles(); //Place the paddles in their appropriate places.
 		
-		ball.setPosition(screenWidth / 2, screenHeight / 2); //Place the ball at the center of the screen.
-		ball.setVelocity((rand.nextDouble() % MAX_ANGLE + MIN_ANGLE) * 5.0, 
-			(rand.nextDouble() % MAX_ANGLE + MIN_ANGLE) * 5.0); //Start with a random ball velocity.
+		playerTurn = PlayerTurn.HUMAN; //The first server is human.
 	
 		addMouseListener(this); //Add a mouse listener for mouse input events.
 		addMouseMotionListener(this); //Add a mouse motion listener for mouse motion events.
@@ -142,12 +168,36 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		//Call the methid to draw the game menu when needed
 		if (gameState == GameState.MENU)
 		{
+			debugString = "Drawing menu!\n";
+			
+			try
+			{
+				out.write(debugString, 0, debugString.length());
+			}
+			catch(IOException ioe) {}
+			catch(Exception e) {}
+			
 			drawMenu();
 		}
 		
-		//If a round is currently playing, then...
-		if (gameState == GameState.ROUND)
+		//If a round is currently playing or if the preround preparations are occuring, then...
+		if (gameState == GameState.ROUND || gameState == GameState.PREROUND)
 		{
+			//Call the countdown screen when needed.
+			if (gameState == GameState.PREROUND)
+			{
+				debugString = "Drawing countdown!\n";
+			
+				try
+				{
+					out.write(debugString, 0, debugString.length());
+				}
+				catch(IOException ioe) {}
+				catch(Exception e) {} 
+				
+				drawCountdown();
+			}
+			
 			//Create a music stream, if no midi stream is running
 			if(!songIsRunning)
 			{
@@ -173,7 +223,16 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 			g2d.drawLine(0, screenHeight / 2, screenWidth, screenHeight / 2);
 			
 			//Call the methods to draw the game's objects when the game is running
-			drawScore();
+			debugString = "Drawing game objects!\n";
+			
+			try
+			{
+				out.write(debugString, 0, debugString.length());
+			}
+			catch(IOException ioe) {}
+			catch(Exception e) {}
+			
+			drawRoundInfo();
 			drawBall();
 			drawPaddle();
 			drawPaddleAI();
@@ -182,6 +241,15 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		//Call the game over screen when needed.
 		if (gameState == GameState.OVER)
 		{
+			debugString = "Drawing game over!\n";
+			
+			try
+			{
+				out.write(debugString, 0, debugString.length());
+			}
+			catch(IOException ioe) {}
+			catch(Exception e) {}
+			
 			drawGameOver();
 		}
 		
@@ -238,18 +306,21 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		g2d.fill(ball.getShape()); //Draw the ball.
 	}
 	
-	//Method Summary: Draws, formats, and colors the score.
-	public void drawScore()
+	//Method Summary: Draws, formats, and colors the round information.
+	public void drawRoundInfo()
 	{
 		g2d.setFont(new Font("New Times Roman", Font.BOLD, 40)); //Set the font of the score.
 		g2d.setColor(Color.YELLOW); //Set the color of the font.
 		g2d.drawString("" + userScore, 10, 460); //Draw the user score.
 		g2d.drawString("" + AIScore, 10, 50); //Draw the AI score.
-      
-      if (!ball.inPlay())
-      {
-         g2d.drawString("" +  countdown, screenWidth / 2, screenHeight / 3); //Draw the countdown before the next round.
-      }
+	}
+	
+	//Method Summary: Draws the countdown.
+	public void drawCountdown()
+	{
+		g2d.setFont(new Font("New Times Roman", Font.BOLD, 40)); //Set the font of the score.
+		g2d.setColor(Color.YELLOW); //Set the color of the font.
+		g2d.drawString("" +  countdown, screenWidth / 2, screenHeight / 3); //Draw the countdown before the next round.
 	}
 	
 	//Method Summary: Draws the game over screen.
@@ -259,7 +330,7 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		songIsRunning = false; //Set the check on the song's activity to false.
 		
 		//If userScore is 10, then set the winning message for the user.
-		if (userScore == 10)
+		if (userScore == 1)
 		{
 			g2d.setFont(new Font("New Times Roman", Font.BOLD, 36));
 			g2d.setColor(Color.YELLOW);
@@ -267,7 +338,7 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		}
 		
 		//If AIScore is 10, then draw the winning message for the AI.
-		if (AIScore == 10)
+		if (AIScore == 1)
 		{
 			g2d.setFont(new Font("New Times Roman", Font.BOLD, 36));
 			g2d.setColor(Color.RED);
@@ -321,6 +392,13 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 	//Method Summary: Stops the thread and performs closing maintenance.
 	public void stop()
 	{
+		try
+		{
+			out.close();
+		}
+		catch (IOException ioe) {}
+		catch (Exception e) {}
+		
 		//Make the loop variable null
 		gameLoop = null;
 		
@@ -349,16 +427,35 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		{
 			updatePaddleAI();
 			updateBall();
-			updateScore();
+			updateRoundInfo();
 			checkCollision();
 		}
+		else if (gameState == GameState.PREROUND)
+		{
+			if (!hasReset)
+			{
+				prepareNextRound();
+				hasReset = true;
+			}
+			
+			updateCountdown();
+		}
+		
+		updateGameState();
 	}
 	
 	//Method Summary: Updates the AI of the opponent.
 	public void updatePaddleAI()
 	{
-		//Create paddle AI algorithm
-		if (ball.getPosition().getY() <= screenHeight - 120)
+		//Find the current ball direction.
+		Vector2 currentBallDirection = new Vector2(ball.getVelocity());
+		currentBallDirection.normalize();
+		
+		currentBallDirection.scale(Vector2.distance(paddleAI.getPosition(), ball.getPosition())); //Scale the current ball direction by the distance between the AI's paddle and the ball.
+		double closingDistance = Vector2.distance(paddleAI.getPosition(), currentBallDirection);
+		
+		//Move the paddle if the ball is apporoaching the goal.
+		if (closingDistance > paddleAI.getPaddleW() / 2 && ball.getPosition().getY() < screenHeight / 2)
 		{
 			if (paddleAI.getPosition().getX() != ball.getPosition().getX() - 15)
 			{
@@ -371,51 +468,19 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 					paddleAI.getVelocity().setX(5);
 				}
 			}
-			else
-			{
-				paddleAI.getVelocity().setX(0);
-			}
+			
+			paddleAI.moveShape(); //Move the paddle in the appropriate direction.
 		}
-		
-		paddleAI.moveShape(); 
 	}
 	
 	//Method Summary: Updates the ball's position.
 	public void updateBall()
-	{
-		if (ball.inPlay()) //If the ball is in play:
-		{	
-			//Reset the countdown.
-			count = 150;
-			countdown = 3;
-      
-			ball.moveShape(); //Update the ball's position.
-		}
-		else //If the ball is NOT in play:
-		{
-			ball.setPosition((screenWidth / 2) - 5, (screenHeight / 2) - 5); //Start the next round.
-		
-			if (countdown == 0) //If the countdown has ended:
-			{
-				ball.setInPlay(true); //Set the ball into play.
-				ball.setVelocity((rand.nextDouble() % MAX_ANGLE + MIN_ANGLE) * 5.0, 
-					(rand.nextDouble() % MAX_ANGLE + MIN_ANGLE) * 5.0); //Set the velocity of the ball.
-			}
-			else //If the countdown hasn't ended yet:
-			{
-				if (count % 50 == 0 && count != 150) //If the count is divisible by 50 and is NOT the initial value:
-				{
-					countdown--; //Decrement the countdown.
-				}
-          
-				ball.setVelocity(0, 0); //Set the ball's velocity to 0.
-				count--; //Decrement the count.
-			}
-		}
+	{		
+		ball.moveShape(); //Update the ball's position.
 	}
 	
 	//Method Summary: Updates the score.
-	public void updateScore()
+	public void updateRoundInfo()
 	{
 		//Update the AI's score if the ball leaves the top of the screen.
 		if (ball.getPosition().getY() >= screenHeight)
@@ -428,12 +493,58 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		{
 			userScore += 1;
 		}
-		
-		//Change the game state if any of the scores equals 10.
-		if (userScore == 10 || AIScore == 10)
+	}
+	
+	public void updateCountdown()
+	{
+		if (countdown == 0)
 		{
-			gameState = GameState.OVER;
+			countdown = 3; //Reset the countdown to 3.
+			count = 150; //Reset the count to 150.
+			playerTurn = (playerTurn == PlayerTurn.HUMAN) ? PlayerTurn.CPU : PlayerTurn.HUMAN; //Switch the player turn.
 		}
+		
+		if (count % 50 == 0 && count != 150) //If the count is divisible by 50 and is NOT the initial value:
+		{
+			countdown--; //Decrement the countdown.
+		}
+          
+		count--; //Decrement the count.
+	}
+	
+	//Method Summary: Prepares the next round.
+	public void prepareNextRound()
+	{
+		initializeBall(); //Initialize the ball.
+		initializePaddles(); //Initialize the paddles.
+	}
+	
+	//Method Summary: Initializes the ball's properties before the next round.
+	public void initializeBall()
+	{
+		double ballVelY = 5.0; //Set the ball's vertical velocity.
+		double ballVelX = rand.nextDouble() * 5.0; //Set the ball's horizontal velocity.
+				
+		if (playerTurn == PlayerTurn.CPU) //If the CPU is the sever:
+		{
+			ballVelY *= -1.0; //Flip the polarity of the ball's vertical velocity.
+		}
+				
+		if (rand.nextInt(2) == 0) //If the random integer is correct:
+		{
+			ballVelX *= -1.0; //Flip the polarity of the ball's horizontal velocity.
+		}
+				
+		ball.setVelocity(ballVelX, ballVelY); //Set the velocity of the ball.
+		ball.setPosition((screenWidth / 2) - 5, (screenHeight / 2) - 5); //Start the next round.
+	}
+	
+	//Method Summary: Initialize the paddles' properties before the next round.
+	public void initializePaddles()
+	{
+		//Place the paddles to their respective positions at the top and bottom of the game screen.
+		paddle.setPosition(295.0, 380.0);
+		paddleAI.setPosition(295.0, 100.0);
 	}
 	
 	//Method Summary: Checks the collision every frame.
@@ -475,7 +586,7 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 			//Reverse the ball's velocity.
 			xDifference = paddleAI.getPosition().getX() - ball.getPosition().getX() + paddleAI.getPaddleW() / 2 + ball.getBallW() / 2;
 			ball.setVelocity(xDifference * -0.5, -ball.getVelocity().getY());
-			ball.getPosition().setY(paddleAI.getPosition().getY() - ball.getBallH());
+			ball.getPosition().setY(paddleAI.getPosition().getY() + ball.getBallH());
 			
 			//Create a gong sound when the ball hits the paddle.
 			try
@@ -525,8 +636,65 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 			catch (Exception e)
 			{}
          
-			//The ball is now out of play.
-			ball.setInPlay(false);
+			//Indicate the paddle and ball properties need to be reset.
+			hasReset = false;
+		}
+	}
+	
+	public void updateGameState()
+	{
+		if (gameState == GameState.OVER)
+		{
+			if (changeToMenu) //If the user wants to transition to the menu, then...
+			{
+				if (timeDelta >= 3) //If 3 seconds have passed, then...
+				{
+					gameState = GameState.MENU; //Change the game state to the menu.
+					changeToMenu = false; //Signal that the transition to the menu is complete.
+					startTime = System.currentTimeMillis() * 1000; //Begin the delay time during the menu.
+					timeDelta = 0; //Reset the time delta.
+				}
+				else
+				{
+					timeDelta = System.currentTimeMillis() * 1000 - startTime; //Store the current time delta.
+				}
+			}
+		}
+		else if (gameState == GameState.ROUND)
+		{
+			if (userScore == scoreLimit || AIScore == scoreLimit) //Change the game state if any of the scores equals 1.
+			{
+				gameState = GameState.OVER; //Change the game state to the game over screen.
+				startTime = System.currentTimeMillis() * 1000;
+			}
+			else if (ball.getPosition().getY() >= screenHeight || ball.getPosition().getY() <= 0)
+			{
+				gameState = GameState.PREROUND; //Change the game state to the preround preparations.
+			}
+		}
+		else if (gameState == GameState.MENU) //If the ball passes any of the goals OR the user wants to transition from the menu, then...
+		{
+			if (changeToPreround) //If the change to the preround is signaled, then...
+			{
+				if (timeDelta >= 3) //If 3 seconds have passed, then...
+				{
+					gameState = GameState.PREROUND; //Change the game state to the menu.
+					changeToPreround = false; //Signal that the transition to the preround stage is complete.
+					startTime = System.currentTimeMillis() * 1000; //Begin the delay time.
+					timeDelta = 0; //Reset the time delta.
+				}
+				else
+				{
+					timeDelta = System.currentTimeMillis() * 1000 - startTime; //Store the current time delta.
+				}
+			}
+		}
+		else
+		{
+			if (countdown == 0)
+			{
+				gameState = GameState.ROUND;
+			}
 		}
 	}
 	
@@ -547,15 +715,13 @@ public class PongClone extends Canvas implements Runnable, MouseListener, MouseM
 		//Run the game with a click of the mouse.
 		if (gameState == GameState.MENU)
 		{
-			gameState = GameState.ROUND; //Signal that the game needs to run.
-			repaint(); //Render the frame.
+			changeToPreround = true; //Signal the start of a new round.
 		}
 		
 		//Exit the game over screen with a click of the mouse
 		if (gameState == GameState.OVER)
 		{
-			gameState = GameState.MENU; //Signal that the game menu needs to be displayed.
-			repaint(); //Render the frame.
+			changeToMenu = true; //Signal the transition from the game over screen to the menu.
 		}
 	}
 	
