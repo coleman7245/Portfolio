@@ -1,6 +1,10 @@
 //Author: coleman7245
 //Project: Encryption Program
+<<<<<<< HEAD
+//Last Edit: Monday, March 28, 2023
+=======
 //Last Edit: Thursday, February 14, 2019
+>>>>>>> 60f8e5bebf8cad69c9849c9b76f9512f04bea360
 
 #include<stdlib.h>
 #include<stdio.h>
@@ -23,6 +27,19 @@ typedef struct
 	
 } Process; //Struct for storing process information.
 
+<<<<<<< HEAD
+typedef struct
+{
+	int current_pos;
+	int size;
+	int time;
+	int winning_ticket;
+	int processes_left;
+	int option;
+} AlgorithmOverhead;
+
+=======
+>>>>>>> 60f8e5bebf8cad69c9849c9b76f9512f04bea360
 /*Prototypes for methods*/
 void readFile(FILE *input_file, int size, Process *processes); //Reads a file for the specific parameters of this assignment. Returns a pointer to an array of processes.
 void printProcessInfo(Process *processes, int size, int option); //Prints the process information specific to this assignment in stdout.
@@ -32,12 +49,22 @@ void FCFS(Process *processes, int size); //Schedules the list of processes as fi
 void SJF(Process *processes, int size, int preempt);
 void PriorityScheduling(Process *processes, int size); //Schedules the list of processes according to their individual priority.
 void LotteryScheduling(Process *lottery_processes, int size, int random_seed); //Schedules the list of processes using a lottery system.
+<<<<<<< HEAD
+int findProcess(Process *processes, AlgorithmOverhead *overhead);
+int switchProcesses(Process *processes, AlgorithmOverhead *overhead);
+void swapProcess(Process *processA, Process *processB, int size);
+void swapTickets(int *ticketsA, int *ticketsB, int size);
+int findWinningTicket(Process *processes, AlgorithmOverhead *overhead);
+void passTickets(Process *processes, AlgorithmOverhead *overhead);
+void printAlgorithmOverhead(AlgorithmOverhead *overhead);
+=======
 int findProcess(Process *processes, int size, int time, int option);
 int switchProcesses(Process *processes, int size, int current_pos, int time, int *processes_left, int option);
 void mergeSort(Process *array, int size, int start, int end);
 void merge(Process *array, int size, int start, int end, int mid, Process *tempArray);
 void swapProcess(Process *processA, Process *processB, int size);
 void swapTickets(int *ticketsA, int *ticketsB, int size);
+>>>>>>> 60f8e5bebf8cad69c9849c9b76f9512f04bea360
 
 /*Main function*/
 int main(int argc, char** argv)
@@ -349,7 +376,11 @@ int displayMenu(Process *processes, int size, int random_seed)
 			printProcessInfo(current_list, size, option); //Print the process info on the command console.
 		}
 		
+<<<<<<< HEAD
+	} while(option >= 1 && option <= 5); //While the user has chosen an option other than exit...
+=======
 	} while(option != 6); //While the user has chosen an option other than exit...
+>>>>>>> 60f8e5bebf8cad69c9849c9b76f9512f04bea360
 	
 	for (int pos = 0; pos < size; pos++)
 	{
@@ -365,6 +396,20 @@ int displayMenu(Process *processes, int size, int random_seed)
 	return 1;
 }
 
+<<<<<<< HEAD
+int findProcess(Process *processes, AlgorithmOverhead *overhead)
+{
+	int new_pos = -1;
+	
+	printAlgorithmOverhead(overhead);
+	
+	if (overhead->option == 1)
+	{
+		for (int pos = 0; pos <= overhead->size; pos++) //From the beginning to the end of the list of processes...
+		{
+			if (processes[pos].duration_left > 0 &&
+				processes[pos].arrival_time <= overhead->time) //Check if the process arrived on time, has work left to be done, and has yet to run.
+=======
 int findProcess(Process *processes, int size, int time, int option)
 {
 	int new_pos = -1;
@@ -375,6 +420,7 @@ int findProcess(Process *processes, int size, int time, int option)
 		{
 			if (processes[pos].duration_left > 0 &&
 				processes[pos].arrival_time <= time) //Check if the process arrived on time, has work left to be done, and has yet to run.
+>>>>>>> 60f8e5bebf8cad69c9849c9b76f9512f04bea360
 			{
 				if (new_pos == -1 || processes[pos].arrival_time < processes[new_pos].arrival_time ||
 					(processes[pos].arrival_time == processes[new_pos].arrival_time &&
@@ -385,11 +431,19 @@ int findProcess(Process *processes, int size, int time, int option)
 			}
 		}
 	}
+<<<<<<< HEAD
+	else if (overhead->option == 2)
+	{
+		for (int pos = 0; pos < overhead->size; pos++) //From the beginning to the end of the list of processes...
+		{
+			if (processes[pos].arrival_time <= overhead->time &&
+=======
 	else if (option == 2)
 	{
 		for (int pos = 0; pos < size; pos++) //From the beginning to the end of the list of processes...
 		{
 			if (processes[pos].arrival_time <= time &&
+>>>>>>> 60f8e5bebf8cad69c9849c9b76f9512f04bea360
 				processes[pos].duration_left > 0) //Check if the process arrived on time and has yet to run.
 			{
 				if (new_pos == -1 || processes[pos].duration_left < processes[new_pos].duration_left ||
@@ -401,11 +455,19 @@ int findProcess(Process *processes, int size, int time, int option)
 			}
 		}
 	}
+<<<<<<< HEAD
+	else if (overhead->option == 3)
+	{
+		for (int pos = 0; pos < overhead->size; pos++) //From the beginning to the end of the list of processes...
+		{
+			if (processes[pos].arrival_time <= overhead->time &&
+=======
 	else if (option == 3)
 	{
 		for (int pos = 0; pos < size; pos++) //From the beginning to the end of the list of processes...
 		{
 			if (processes[pos].arrival_time <= time &&
+>>>>>>> 60f8e5bebf8cad69c9849c9b76f9512f04bea360
 				processes[pos].duration_left > 0) //Check if the process arrived on time and has yet to run.
 			{
 				if (new_pos == -1 || processes[pos].priority > processes[new_pos].priority ||
@@ -420,6 +482,22 @@ int findProcess(Process *processes, int size, int time, int option)
 			}
 		}
 	}
+<<<<<<< HEAD
+	else if (overhead->option == 4)
+	{	
+		for (int pos = 0; pos < overhead->size; pos++) //From the beginning to the end of the list of processes...
+		{
+			if (processes[pos].arrival_time <= overhead->time &&
+				processes[pos].duration_left > 0) //Check if the process arrived on time and has yet to run.
+			{
+				new_pos = findWinningTicket(processes, overhead);
+			}
+		}
+	}
+	
+	printf("From findProcess: processes[new_pos].waiting_time = %d\n", processes[new_pos].waiting_time);
+	printf("From findProcess: time = %d\n", overhead->time);
+=======
 	else if (option == 4)
 	{
 		
@@ -431,11 +509,16 @@ int findProcess(Process *processes, int size, int time, int option)
 	
 	printf("From findProcess: processes[new_pos].waiting_time = %d\n", processes[new_pos].waiting_time);
 	printf("From findProcess: time = %d\n", time);
+>>>>>>> 60f8e5bebf8cad69c9849c9b76f9512f04bea360
 	printf("From findProcess: processes[new_pos].last_runtime = %d\n", processes[new_pos].last_runtime);
 	
 	if (new_pos != -1)
 	{
+<<<<<<< HEAD
+		processes[new_pos].waiting_time += overhead->time - processes[new_pos].last_runtime;
+=======
 		processes[new_pos].waiting_time += time - processes[new_pos].last_runtime;
+>>>>>>> 60f8e5bebf8cad69c9849c9b76f9512f04bea360
 	}
 	
 	printf("From findProcess: new_pos = %d\n", new_pos);
@@ -444,17 +527,58 @@ int findProcess(Process *processes, int size, int time, int option)
 	return new_pos;
 }
 
+<<<<<<< HEAD
+int switchProcesses(Process *processes, AlgorithmOverhead *overhead)
+{
+	int new_pos = findProcess(processes, overhead);
+	processes[overhead->current_pos].turnaround_time = overhead->time - processes[overhead->current_pos].arrival_time;
+	overhead->processes_left--; //Decrement the number of processes left to run.
+	
+	if (overhead->option == 4)
+	{
+		passTickets(processes, overhead);
+	}
+	
+	return new_pos;
+=======
 int switchProcesses(Process *processes, int size, int current_pos, int time, int *processes_left, int option)
 {
 	processes[current_pos].turnaround_time = time - processes[current_pos].arrival_time;
 	(*processes_left)--; //Decrement the number of processes left to run.
 	
 	return findProcess(processes, size, time, option);
+>>>>>>> 60f8e5bebf8cad69c9849c9b76f9512f04bea360
 }
 
 void FCFS(Process *processes, int size)
 {
 	/*Variables*/
+<<<<<<< HEAD
+	AlgorithmOverhead *overhead = malloc(sizeof(AlgorithmOverhead));
+	overhead->size = size;
+	overhead->processes_left = size; //The number of processes left to complete their run.
+	overhead->time = 1; //Time of execution.
+	overhead->option = 1;
+	overhead->current_pos = findProcess(processes, overhead); //Current position of the running process within the new array.
+	
+	while (overhead->processes_left > 0) //While the number of processes left is greater than 0...
+	{	
+		printf("From FCFS: Current Process ID = %d\n", processes[overhead->current_pos].pid);
+		printf("From FCFS: processes[%d].duration_left = %d\n", overhead->current_pos, processes[overhead->current_pos].duration_left);
+		printf("From FCFS: time = %d\n", overhead->time);
+		
+		if (processes[overhead->current_pos].duration_left <= 0) //Else, if the process has finished with the CPU, then...
+		{	
+			overhead->current_pos = switchProcesses(processes, overhead);
+		}
+			
+		overhead->time++; //Increment the time.
+		processes[overhead->current_pos].duration_left--; //Decrement the workload.
+	}
+	
+	free(overhead);
+	overhead = NULL;
+=======
 	int processes_left = size; //The number of processes left to complete their run.
 	int time = 1; //Time of execution.
 	int current_pos = findProcess(processes, size, time, 1); //Current position of the running process within the new array.
@@ -473,11 +597,43 @@ void FCFS(Process *processes, int size)
 		time++; //Increment the time.
 		processes[current_pos].duration_left--; //Decrement the workload.
 	}
+>>>>>>> 60f8e5bebf8cad69c9849c9b76f9512f04bea360
 }
 
 void SJF(Process *processes, int size, int preempt)
 {
 	/*Variables*/
+<<<<<<< HEAD
+	AlgorithmOverhead *overhead = malloc(sizeof(AlgorithmOverhead));
+	overhead->size = size;
+	overhead->processes_left = size; //The number of processes left to complete their run.
+	overhead->time = 1; //Time of execution.
+	overhead->option = 2;
+	overhead->current_pos = findProcess(processes, overhead); //Current position of the running process within the new array. 
+	
+	while (overhead->processes_left > 0) //While the number of processes left is greater than 0...
+	{
+		printf("From SJF: Current Process ID = %d\n", processes[overhead->current_pos].pid);
+		printf("From SJF: processes[%d].duration_left = %d\n", overhead->current_pos, processes[overhead->current_pos].duration_left);
+		printf("From SJF: time = %d\n", overhead->time);
+		
+		if (processes[overhead->current_pos].duration_left <= 0) //Else, if the process has finished with the CPU, then...
+		{	
+			overhead->current_pos = switchProcesses(processes, overhead);
+		}
+		else if (preempt == 1)
+		{
+			processes[overhead->current_pos].last_runtime = overhead->time;
+			overhead->current_pos = findProcess(processes, overhead);
+		}
+		
+		overhead->time++; //Increment the time.
+		processes[overhead->current_pos].duration_left--; //Decrement the time remaining for the process to finish its task.
+	}
+	
+	free(overhead);
+	overhead = NULL;
+=======
 	int processes_left = size; //The number of processes left to complete their run.
 	int time = 1; //Time of execution.
 	int current_pos = findProcess(processes, size, time, 2); //Current position of the running process within the new array. 
@@ -561,6 +717,7 @@ void merge(Process *array, int size, int start, int end, int mid, Process *tempA
 	{
 		swapProcess(&tempArray[i], &array[i], size);
 	}
+>>>>>>> 60f8e5bebf8cad69c9849c9b76f9512f04bea360
 }
 
 void swapProcess(Process *processA, Process *processB, int size)
@@ -585,6 +742,117 @@ void swapTickets(int *ticketsA, int *ticketsB, int size)
 	}
 }
 
+<<<<<<< HEAD
+void passTickets(Process *processes, AlgorithmOverhead *overhead)
+{	
+	int greatest_num = 0;
+	int next_pos = 0;
+	
+	for (int pos = 0; pos < overhead->size; pos++)
+	{
+		if (greatest_num < processes[pos].num_of_tickets)
+		{
+			greatest_num = processes[pos].num_of_tickets;
+		}
+	}
+	
+	for (int t_pos = 0; t_pos < processes[overhead->current_pos].num_of_tickets; t_pos++)
+	{
+		processes[next_pos].lower_bound_tickets[processes[next_pos].num_of_tickets] = processes[overhead->current_pos].lower_bound_tickets[t_pos];
+		processes[overhead->current_pos].lower_bound_tickets[t_pos] = 0;
+		processes[next_pos].upper_bound_tickets[processes[next_pos].num_of_tickets] = processes[overhead->current_pos].upper_bound_tickets[t_pos];
+		processes[overhead->current_pos].upper_bound_tickets[t_pos] = 0;
+		processes[next_pos].num_of_tickets++;
+	}
+	
+	processes[overhead->current_pos].num_of_tickets = 0;
+}
+
+void PriorityScheduling(Process *processes, int size)
+{
+	/*Variables*/
+	AlgorithmOverhead *overhead = malloc(sizeof(overhead));
+	overhead->size = size;
+	overhead->processes_left = size; //The number of processes left to complete their run.
+	overhead->time = 1; //Time of execution.
+	overhead->option = 3;
+	overhead->current_pos = findProcess(processes, overhead); //Current position of the running process within the new array. 
+	
+	while (overhead->processes_left > 0) //While the number of processes left is greater than 0...
+	{	
+		printf("From PriorityScheduling: Current Process ID = %d\n", processes[overhead->current_pos].pid);
+		printf("From PriorityScheduling: processes[%d].duration_left = %d\n", overhead->current_pos, processes[overhead->current_pos].duration_left);
+		printf("From PriorityScheduling: time = %d\n", overhead->time);
+		
+		if (processes[overhead->current_pos].duration_left <= 0) //Else, if the process has finished with the CPU, then...
+		{	
+			overhead->current_pos = switchProcesses(processes, overhead);
+		}
+		
+		overhead->time++; //Increment the time.
+		processes[overhead->current_pos].duration_left--; //Decrement the time remaining for the process to finish its task.
+	}
+	
+	free(overhead);
+	overhead = NULL;
+}
+
+int findWinningTicket(Process *processes, AlgorithmOverhead *overhead)
+{
+	int winning_pos = -1;
+	
+	for (int pos = 0; pos < overhead->size; pos++)
+	{
+		for (int t_pos = 0; t_pos < processes[pos].num_of_tickets; t_pos++)
+		{
+			if (processes[pos].lower_bound_tickets[t_pos] >= overhead->winning_ticket &&
+				processes[pos].upper_bound_tickets[t_pos] <= overhead->winning_ticket)
+				{
+					winning_pos = pos;
+				}
+		}
+	}
+	
+	return winning_pos;
+}
+
+void LotteryScheduling(Process *processes, int size, int random_seed)
+{
+	AlgorithmOverhead *overhead = malloc(sizeof(AlgorithmOverhead));
+	overhead->size = size;
+	overhead->processes_left = size;
+	overhead->time = 1;
+	overhead->option = 4;
+	overhead->current_pos = findProcess(processes, overhead);
+	
+	srand(random_seed);
+	overhead->winning_ticket = rand();
+	
+	while (overhead->processes_left > 0)
+	{
+		if (processes[overhead->current_pos].duration_left <= 0)
+		{
+			passTickets(processes, overhead);
+			overhead->current_pos = switchProcesses(processes, overhead);
+		}
+		
+		overhead->time++;
+		processes[overhead->current_pos].duration_left--;
+	}
+	
+	free(overhead);
+	overhead = NULL;
+}
+
+void printAlgorithmOverhead(AlgorithmOverhead *overhead)
+{
+	printf("overhead->current_pos = %d\n", overhead->current_pos);
+	printf("overhead->size = %d\n", overhead->size);
+	printf("overhead->time = %d\n", overhead->time);
+	printf("overhead->winning_ticket = %d\n", overhead->winning_ticket);
+	printf("overhead->processes_left = %d\n", overhead->processes_left);
+	printf("overhead->option = %d\n", overhead->option);
+=======
 void PriorityScheduling(Process *processes, int size)
 {
 	/*Variables*/
@@ -826,4 +1094,5 @@ void LotteryScheduling(Process *lottery_processes, int size, int random_seed)
 
 		time++; //Increment the time.
 	}
+>>>>>>> 60f8e5bebf8cad69c9849c9b76f9512f04bea360
 }
