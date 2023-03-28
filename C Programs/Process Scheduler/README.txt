@@ -1,5 +1,5 @@
-//Author: Derek Coleman
+//Author: coleman7245
 //Project: Process Scheduler
-//Last Update: 3/24/23
+//Last Edit: Monday, March 28, 2023
 
 scheduler.c: This .c file contains both the main function and the auxiliary functions neeeded to schedule the processes. 

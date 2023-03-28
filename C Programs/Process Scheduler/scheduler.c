@@ -1,6 +1,6 @@
 //Author: coleman7245
 //Project: Encryption Program
-//Last Edit: Thursday, February 14, 2019
+//Last Edit: Monday, March 28, 2023
 
 #include<stdlib.h>
 #include<stdio.h>
@@ -23,6 +23,16 @@ typedef struct
 	
 } Process; //Struct for storing process information.
 
+typedef struct
+{
+	int current_pos;
+	int size;
+	int time;
+	int winning_ticket;
+	int processes_left;
+	int option;
+} AlgorithmOverhead;
+
 /*Prototypes for methods*/
 void readFile(FILE *input_file, int size, Process *processes); //Reads a file for the specific parameters of this assignment. Returns a pointer to an array of processes.
 void printProcessInfo(Process *processes, int size, int option); //Prints the process information specific to this assignment in stdout.
@@ -32,12 +42,13 @@ void FCFS(Process *processes, int size); //Schedules the list of processes as fi
 void SJF(Process *processes, int size, int preempt);
 void PriorityScheduling(Process *processes, int size); //Schedules the list of processes according to their individual priority.
 void LotteryScheduling(Process *lottery_processes, int size, int random_seed); //Schedules the list of processes using a lottery system.
-int findProcess(Process *processes, int size, int time, int option);
-int switchProcesses(Process *processes, int size, int current_pos, int time, int *processes_left, int option);
-void mergeSort(Process *array, int size, int start, int end);
-void merge(Process *array, int size, int start, int end, int mid, Process *tempArray);
+int findProcess(Process *processes, AlgorithmOverhead *overhead);
+int switchProcesses(Process *processes, AlgorithmOverhead *overhead);
 void swapProcess(Process *processA, Process *processB, int size);
 void swapTickets(int *ticketsA, int *ticketsB, int size);
+int findWinningTicket(Process *processes, AlgorithmOverhead *overhead);
+void passTickets(Process *processes, AlgorithmOverhead *overhead);
+void printAlgorithmOverhead(AlgorithmOverhead *overhead);
 
 /*Main function*/
 int main(int argc, char** argv)
@@ -349,7 +360,7 @@ int displayMenu(Process *processes, int size, int random_seed)
 			printProcessInfo(current_list, size, option); //Print the process info on the command console.
 		}
 		
-	} while(option != 6); //While the user has chosen an option other than exit...
+	} while(option >= 1 && option <= 5); //While the user has chosen an option other than exit...
 	
 	for (int pos = 0; pos < size; pos++)
 	{
@@ -365,16 +376,18 @@ int displayMenu(Process *processes, int size, int random_seed)
 	return 1;
 }
 
-int findProcess(Process *processes, int size, int time, int option)
+int findProcess(Process *processes, AlgorithmOverhead *overhead)
 {
 	int new_pos = -1;
 	
-	if (option == 1)
+	printAlgorithmOverhead(overhead);
+	
+	if (overhead->option == 1)
 	{
-		for (int pos = 0; pos <= size; pos++) //From the beginning to the end of the list of processes...
+		for (int pos = 0; pos <= overhead->size; pos++) //From the beginning to the end of the list of processes...
 		{
 			if (processes[pos].duration_left > 0 &&
-				processes[pos].arrival_time <= time) //Check if the process arrived on time, has work left to be done, and has yet to run.
+				processes[pos].arrival_time <= overhead->time) //Check if the process arrived on time, has work left to be done, and has yet to run.
 			{
 				if (new_pos == -1 || processes[pos].arrival_time < processes[new_pos].arrival_time ||
 					(processes[pos].arrival_time == processes[new_pos].arrival_time &&
@@ -385,11 +398,11 @@ int findProcess(Process *processes, int size, int time, int option)
 			}
 		}
 	}
-	else if (option == 2)
+	else if (overhead->option == 2)
 	{
-		for (int pos = 0; pos < size; pos++) //From the beginning to the end of the list of processes...
+		for (int pos = 0; pos < overhead->size; pos++) //From the beginning to the end of the list of processes...
 		{
-			if (processes[pos].arrival_time <= time &&
+			if (processes[pos].arrival_time <= overhead->time &&
 				processes[pos].duration_left > 0) //Check if the process arrived on time and has yet to run.
 			{
 				if (new_pos == -1 || processes[pos].duration_left < processes[new_pos].duration_left ||
@@ -401,11 +414,11 @@ int findProcess(Process *processes, int size, int time, int option)
 			}
 		}
 	}
-	else if (option == 3)
+	else if (overhead->option == 3)
 	{
-		for (int pos = 0; pos < size; pos++) //From the beginning to the end of the list of processes...
+		for (int pos = 0; pos < overhead->size; pos++) //From the beginning to the end of the list of processes...
 		{
-			if (processes[pos].arrival_time <= time &&
+			if (processes[pos].arrival_time <= overhead->time &&
 				processes[pos].duration_left > 0) //Check if the process arrived on time and has yet to run.
 			{
 				if (new_pos == -1 || processes[pos].priority > processes[new_pos].priority ||
@@ -420,22 +433,25 @@ int findProcess(Process *processes, int size, int time, int option)
 			}
 		}
 	}
-	else if (option == 4)
-	{
-		
-	}
-	else
-	{
-		
+	else if (overhead->option == 4)
+	{	
+		for (int pos = 0; pos < overhead->size; pos++) //From the beginning to the end of the list of processes...
+		{
+			if (processes[pos].arrival_time <= overhead->time &&
+				processes[pos].duration_left > 0) //Check if the process arrived on time and has yet to run.
+			{
+				new_pos = findWinningTicket(processes, overhead);
+			}
+		}
 	}
 	
 	printf("From findProcess: processes[new_pos].waiting_time = %d\n", processes[new_pos].waiting_time);
-	printf("From findProcess: time = %d\n", time);
+	printf("From findProcess: time = %d\n", overhead->time);
 	printf("From findProcess: processes[new_pos].last_runtime = %d\n", processes[new_pos].last_runtime);
 	
 	if (new_pos != -1)
 	{
-		processes[new_pos].waiting_time += time - processes[new_pos].last_runtime;
+		processes[new_pos].waiting_time += overhead->time - processes[new_pos].last_runtime;
 	}
 	
 	printf("From findProcess: new_pos = %d\n", new_pos);
@@ -444,123 +460,81 @@ int findProcess(Process *processes, int size, int time, int option)
 	return new_pos;
 }
 
-int switchProcesses(Process *processes, int size, int current_pos, int time, int *processes_left, int option)
+int switchProcesses(Process *processes, AlgorithmOverhead *overhead)
 {
-	processes[current_pos].turnaround_time = time - processes[current_pos].arrival_time;
-	(*processes_left)--; //Decrement the number of processes left to run.
+	int new_pos = findProcess(processes, overhead);
+	processes[overhead->current_pos].turnaround_time = overhead->time - processes[overhead->current_pos].arrival_time;
+	overhead->processes_left--; //Decrement the number of processes left to run.
 	
-	return findProcess(processes, size, time, option);
+	if (overhead->option == 4)
+	{
+		passTickets(processes, overhead);
+	}
+	
+	return new_pos;
 }
 
 void FCFS(Process *processes, int size)
 {
 	/*Variables*/
-	int processes_left = size; //The number of processes left to complete their run.
-	int time = 1; //Time of execution.
-	int current_pos = findProcess(processes, size, time, 1); //Current position of the running process within the new array.
+	AlgorithmOverhead *overhead = malloc(sizeof(AlgorithmOverhead));
+	overhead->size = size;
+	overhead->processes_left = size; //The number of processes left to complete their run.
+	overhead->time = 1; //Time of execution.
+	overhead->option = 1;
+	overhead->current_pos = findProcess(processes, overhead); //Current position of the running process within the new array.
 	
-	while (processes_left > 0) //While the number of processes left is greater than 0...
+	while (overhead->processes_left > 0) //While the number of processes left is greater than 0...
 	{	
-		printf("From FCFS: Current Process ID = %d\n", processes[current_pos].pid);
-		printf("From FCFS: processes[%d].duration_left = %d\n", current_pos, processes[current_pos].duration_left);
-		printf("From FCFS: time = %d\n", time);
+		printf("From FCFS: Current Process ID = %d\n", processes[overhead->current_pos].pid);
+		printf("From FCFS: processes[%d].duration_left = %d\n", overhead->current_pos, processes[overhead->current_pos].duration_left);
+		printf("From FCFS: time = %d\n", overhead->time);
 		
-		if (processes[current_pos].duration_left <= 0) //Else, if the process has finished with the CPU, then...
+		if (processes[overhead->current_pos].duration_left <= 0) //Else, if the process has finished with the CPU, then...
 		{	
-			current_pos = switchProcesses(processes, size, current_pos, time, &processes_left, 1);
+			overhead->current_pos = switchProcesses(processes, overhead);
 		}
 			
-		time++; //Increment the time.
-		processes[current_pos].duration_left--; //Decrement the workload.
+		overhead->time++; //Increment the time.
+		processes[overhead->current_pos].duration_left--; //Decrement the workload.
 	}
+	
+	free(overhead);
+	overhead = NULL;
 }
 
 void SJF(Process *processes, int size, int preempt)
 {
 	/*Variables*/
-	int processes_left = size; //The number of processes left to complete their run.
-	int time = 1; //Time of execution.
-	int current_pos = findProcess(processes, size, time, 2); //Current position of the running process within the new array. 
+	AlgorithmOverhead *overhead = malloc(sizeof(AlgorithmOverhead));
+	overhead->size = size;
+	overhead->processes_left = size; //The number of processes left to complete their run.
+	overhead->time = 1; //Time of execution.
+	overhead->option = 2;
+	overhead->current_pos = findProcess(processes, overhead); //Current position of the running process within the new array. 
 	
-	while (processes_left > 0) //While the number of processes left is greater than 0...
+	while (overhead->processes_left > 0) //While the number of processes left is greater than 0...
 	{
-		printf("From SJF: Current Process ID = %d\n", processes[current_pos].pid);
-		printf("From SJF: processes[%d].duration_left = %d\n", current_pos, processes[current_pos].duration_left);
-		printf("From SJF: time = %d\n", time);
+		printf("From SJF: Current Process ID = %d\n", processes[overhead->current_pos].pid);
+		printf("From SJF: processes[%d].duration_left = %d\n", overhead->current_pos, processes[overhead->current_pos].duration_left);
+		printf("From SJF: time = %d\n", overhead->time);
 		
-		if (processes[current_pos].duration_left <= 0) //Else, if the process has finished with the CPU, then...
+		if (processes[overhead->current_pos].duration_left <= 0) //Else, if the process has finished with the CPU, then...
 		{	
-			current_pos = switchProcesses(processes, size, current_pos, time, &processes_left, 2);
+			overhead->current_pos = switchProcesses(processes, overhead);
 		}
 		else if (preempt == 1)
 		{
-			processes[current_pos].last_runtime = time;
-			current_pos = findProcess(processes, size, time, 2);
+			processes[overhead->current_pos].last_runtime = overhead->time;
+			overhead->current_pos = findProcess(processes, overhead);
 		}
 		
-		time++; //Increment the time.
-		processes[current_pos].duration_left--; //Decrement the time remaining for the process to finish its task.
-	}
-}
-
-void mergeSort(Process *array, int size, int start, int end)
-{
-	Process *tempArray = malloc(sizeof(Process) * size);
-	
-	if (start < end)
-	{
-		int mid = (start + end) / 2;
-		mergeSort(array, size, start, mid);
-		mergeSort(array, size, mid+1, end);
-		merge(array, size, start, end, mid, tempArray);
+		overhead->time++; //Increment the time.
+		processes[overhead->current_pos].duration_left--; //Decrement the time remaining for the process to finish its task.
 	}
 	
-	for (int i = 0; i < size; i++)
-	{
-		free(tempArray->upper_bound_tickets);
-		tempArray->upper_bound_tickets = NULL;
-		free(tempArray->lower_bound_tickets);
-		tempArray->lower_bound_tickets = NULL;
-	}
-	
-	free(tempArray);
-	tempArray = NULL;
-}
-
-void merge(Process *array, int size, int start, int end, int mid, Process *tempArray)
-{
-	int start1 = start;
-	int start2 = mid+1;
-	int end1 = mid;
-	int end2 = end;
-	int index = start1;
-	
-	while (start1 <= end1 && start2 <= end2)
-	{
-		if (array[start1].arrival_time < array[start2].arrival_time)
-		{
-			swapProcess(&array[start1++], &tempArray[index++], size);
-		}
-		else
-		{
-			swapProcess(&array[start2++], &tempArray[index++], size);
-		}
-	}
-	
-	while (start1 <= end1)
-	{
-		swapProcess(&array[start1++], &tempArray[index++], size);
-	}
-	
-	while (start2 <= end2)
-	{
-		swapProcess(&array[start2++], &tempArray[index++], size);
-	}
-	
-	for (int i = 0; i < size; i++)
-	{
-		swapProcess(&tempArray[i], &array[i], size);
-	}
+	free(overhead);
+	overhead = NULL;
 }
 
 void swapProcess(Process *processA, Process *processB, int size)
@@ -585,245 +559,113 @@ void swapTickets(int *ticketsA, int *ticketsB, int size)
 	}
 }
 
+void passTickets(Process *processes, AlgorithmOverhead *overhead)
+{	
+	int greatest_num = 0;
+	int next_pos = 0;
+	
+	for (int pos = 0; pos < overhead->size; pos++)
+	{
+		if (greatest_num < processes[pos].num_of_tickets)
+		{
+			greatest_num = processes[pos].num_of_tickets;
+		}
+	}
+	
+	for (int t_pos = 0; t_pos < processes[overhead->current_pos].num_of_tickets; t_pos++)
+	{
+		processes[next_pos].lower_bound_tickets[processes[next_pos].num_of_tickets] = processes[overhead->current_pos].lower_bound_tickets[t_pos];
+		processes[overhead->current_pos].lower_bound_tickets[t_pos] = 0;
+		processes[next_pos].upper_bound_tickets[processes[next_pos].num_of_tickets] = processes[overhead->current_pos].upper_bound_tickets[t_pos];
+		processes[overhead->current_pos].upper_bound_tickets[t_pos] = 0;
+		processes[next_pos].num_of_tickets++;
+	}
+	
+	processes[overhead->current_pos].num_of_tickets = 0;
+}
+
 void PriorityScheduling(Process *processes, int size)
 {
 	/*Variables*/
-	int processes_left = size; //The number of processes left to complete their run.
-	int time = 1; //Time of execution.
-	int current_pos = findProcess(processes, size, time, 3); //Current position of the running process within the new array. 
+	AlgorithmOverhead *overhead = malloc(sizeof(overhead));
+	overhead->size = size;
+	overhead->processes_left = size; //The number of processes left to complete their run.
+	overhead->time = 1; //Time of execution.
+	overhead->option = 3;
+	overhead->current_pos = findProcess(processes, overhead); //Current position of the running process within the new array. 
 	
-	while (processes_left > 0) //While the number of processes left is greater than 0...
+	while (overhead->processes_left > 0) //While the number of processes left is greater than 0...
 	{	
-		printf("From PriorityScheduling: Current Process ID = %d\n", processes[current_pos].pid);
-		printf("From PriorityScheduling: processes[%d].duration_left = %d\n", current_pos, processes[current_pos].duration_left);
-		printf("From PriorityScheduling: time = %d\n", time);
+		printf("From PriorityScheduling: Current Process ID = %d\n", processes[overhead->current_pos].pid);
+		printf("From PriorityScheduling: processes[%d].duration_left = %d\n", overhead->current_pos, processes[overhead->current_pos].duration_left);
+		printf("From PriorityScheduling: time = %d\n", overhead->time);
 		
-		if (processes[current_pos].duration_left <= 0) //Else, if the process has finished with the CPU, then...
+		if (processes[overhead->current_pos].duration_left <= 0) //Else, if the process has finished with the CPU, then...
 		{	
-			current_pos = switchProcesses(processes, size, current_pos, time, &processes_left, 3);
+			overhead->current_pos = switchProcesses(processes, overhead);
 		}
 		
-		time++; //Increment the time.
-		processes[current_pos].duration_left--; //Decrement the time remaining for the process to finish its task.
+		overhead->time++; //Increment the time.
+		processes[overhead->current_pos].duration_left--; //Decrement the time remaining for the process to finish its task.
 	}
+	
+	free(overhead);
+	overhead = NULL;
 }
 
-void LotteryScheduling(Process *lottery_processes, int size, int random_seed)
+int findWinningTicket(Process *processes, AlgorithmOverhead *overhead)
 {
-	/*Variables*/
-	Process temp; //Temporary processes for swapping.
-	int winner_pos = 0; //Position of the process that won the lottery.
-	int most_tickets = 0; //Count of the most tickets held by a process.
-	int most_tickets_pos = 0; //Positon of the process that has the most tickets.
-	int winning_num = 0; //The winning number of the lottery.
-	int time = 1; //Time of execution.
-	int processes_left = size; //The number of processes left to complete their run.
-	int lot_pos = -1;  //Position of sorting by lottery.
-	int highest_ticket = 0;
-	int lowest_ticket = lottery_processes[0].lower_bound_tickets[0];
+	int winning_pos = -1;
 	
-	srand((unsigned int)random_seed); //Set the random number generator with the random_seed parameter.
-	
-	for (int pos = 0; pos < size; pos++)
+	for (int pos = 0; pos < overhead->size; pos++)
 	{
-		for (int t_pos = 0; t_pos < size; t_pos++)
+		for (int t_pos = 0; t_pos < processes[pos].num_of_tickets; t_pos++)
 		{
-			if (lottery_processes[pos].upper_bound_tickets[t_pos] > highest_ticket)
-			{
-				highest_ticket = lottery_processes[pos].upper_bound_tickets[t_pos];
-			}
-			
-			if (lottery_processes[pos].lower_bound_tickets[t_pos] < lowest_ticket)
-			{
-				lowest_ticket = lottery_processes[pos].lower_bound_tickets[t_pos];
-			}
+			if (processes[pos].lower_bound_tickets[t_pos] >= overhead->winning_ticket &&
+				processes[pos].upper_bound_tickets[t_pos] <= overhead->winning_ticket)
+				{
+					winning_pos = pos;
+				}
 		}
 	}
 	
-	while (processes_left > 0) //While the number of processes left is greater than 0...
-	{
-		//printf("processes_left = %d\n", processes_left);
-		
-		if (lot_pos == -1)
-		{
-			do
-			{
-				winning_num = (rand() % (highest_ticket - lowest_ticket)) + lowest_ticket; //Set the winning lottery number with a random number.
-			} while (winning_num > highest_ticket || winning_num < lowest_ticket);
-			
-			for (int pos = 0; pos < size; pos++) //For the beginning of the old array, don't stop cycling through processes until the current position is equal or greater to irs size.
-			{
-				if (lottery_processes[pos].duration_left > 0 &&
-					lottery_processes[pos].arrival_time <= time) //If the current process has tickets in its posession, then...
-					{
-						for (int t_pos = 0; t_pos < size; t_pos++) //From the beginning to the end of the list of tickets..
-						{
-							if (winning_num >= lottery_processes[pos].lower_bound_tickets[t_pos] && 
-								winning_num <= lottery_processes[pos].upper_bound_tickets[t_pos]) //If the lottery number is within the current process' winning range, then...
-								{
-										winner_pos = pos; //Declare it the winner and store its position.
-								}
-						}
-					}
-			}
-			
-			for (int pos = 0; pos < size; pos++)
-			{
-				if (lottery_processes[pos].num_of_tickets > most_tickets && lottery_processes[pos].pid != lottery_processes[winner_pos].pid) //If the current process has a greater amount of tickets than the highet number of tickets, then...
-					{
-						most_tickets = lottery_processes[pos].num_of_tickets;
-						most_tickets_pos = pos; //Set the position of the process with the highest amount of tickets to that of the current process.
-					}
-			}
-			
-			for (int t_pos = 0; t_pos < size; t_pos++) //From the beginning to the end of the winning process' list of tickets...
-			{
-				if (lottery_processes[most_tickets_pos].lower_bound_tickets[t_pos] == 0 && lottery_processes[most_tickets_pos].upper_bound_tickets[t_pos] == 0)
-				{
-					lottery_processes[most_tickets_pos].lower_bound_tickets[t_pos] = lottery_processes[winner_pos].lower_bound_tickets[t_pos]; //Add the winner's lower bound tickets to the process that carries the most tickets.
-					lottery_processes[most_tickets_pos].upper_bound_tickets[t_pos] = lottery_processes[winner_pos].upper_bound_tickets[t_pos]; //Add the winner's upper bound tickets to the process that carries the most tickets.
-					lottery_processes[most_tickets_pos].num_of_tickets++; //Increment the number of tickets the receiving process has.
-					lottery_processes[winner_pos].lower_bound_tickets[t_pos] = 0; //Empty the lower ticket range of the winning process at this position.
-					lottery_processes[winner_pos].upper_bound_tickets[t_pos] = 0; //Empty the upper ticket range of the winning process at this position.
-				}
-			}
-			
-			lottery_processes[winner_pos].num_of_tickets = 0; //Empty the number of tickets of the winning process.
-			
-			for (int pos = 0; pos < size; pos++) //From the beginning to the end of the list of processes...
-			{
-				if (lottery_processes[pos].arrival_time <= time && 
-					lottery_processes[pos].duration_left > 0) //Check if the process arrived on time and has yet to run.
-					{
-						//If a canidate has yet to be found OR 
-						//the currently running process is shorter in duration than the canidate process, then...
-						if (lottery_processes[pos].pid != lottery_processes[winner_pos].pid) 
-						{
-							lottery_processes[pos].waiting_time++; //Increment the waiting time of the processes that have arrived, but haven't yet run.
-							lottery_processes[pos].turnaround_time++; //Increment the turnaround time for the process.
-						}
-					}
-			}
-			
-			lottery_processes[winner_pos].duration_left--; //Decrement the time remaining for the process to finish its task.
-			lottery_processes[winner_pos].turnaround_time++; //Increment the turnaround time for the process.
-			lot_pos = 0; //Set the sorting position to 0.
-		}
-		else if (lottery_processes[winner_pos].duration_left <= 0)
-		{
-			//Swap out the process that is occupying the sorting position with that of the recently finished process.
-			temp = lottery_processes[lot_pos]; 
-			lottery_processes[lot_pos] = lottery_processes[winner_pos];
-			lottery_processes[winner_pos] = temp;
-			lot_pos++; //Increment the sorting position.
-			processes_left--; //Decrement the number of processes left to run.
-		
-			most_tickets = 0;
-			
-			do
-			{
-				winning_num = (rand() % (highest_ticket - lowest_ticket)) + lowest_ticket; //Set the winning lottery number with a random number.
-			} while (winning_num > highest_ticket || winning_num < lowest_ticket);
-			
-			for (int pos = 0; pos < size; pos++) //For the beginning of the old array, don't stop cycling through processes until the current position is equal or greater to irs size.
-			{
-				if (lottery_processes[pos].duration_left > 0 &&
-					lottery_processes[pos].arrival_time <= time) //If the current process has tickets in its posession, then...
-					{
-						for (int t_pos = 0; t_pos < size; t_pos++) //From the beginning to the end of the list of tickets..
-						{
-							if (lottery_processes[pos].num_of_tickets != 0 && 
-								winning_num >= lottery_processes[pos].lower_bound_tickets[t_pos] && 
-								winning_num <= lottery_processes[pos].upper_bound_tickets[t_pos]) //If the lottery number is within the current process' winning range, then...
-								{
-									winner_pos = pos; //Declare it the winner and store its position.
-								}
-						}
-					}
-			}
-				
-			if (processes_left > 1)
-			{
-				for (int pos = 0; pos < size; pos++)
-				{
-					if (lottery_processes[pos].num_of_tickets > most_tickets && lottery_processes[pos].pid != lottery_processes[winner_pos].pid) //If the current process has a greater amount of tickets than the highet number of tickets, then...
-						{
-							most_tickets = lottery_processes[pos].num_of_tickets;
-							most_tickets_pos = pos; //Set the position of the process with the highest amount of tickets to that of the current process.
-						}
-				}
-				
-				for (int t_pos = 0; t_pos < size; t_pos++) //From the beginning to the end of the winning process' list of tickets...
-				{
-					if (lottery_processes[winner_pos].lower_bound_tickets[t_pos] != 0 && lottery_processes[winner_pos].upper_bound_tickets[t_pos] != 0)
-					{
-						lottery_processes[most_tickets_pos].lower_bound_tickets[t_pos] = lottery_processes[winner_pos].lower_bound_tickets[t_pos]; //Add the winner's lower bound tickets to the process that carries the most tickets.
-						lottery_processes[most_tickets_pos].upper_bound_tickets[t_pos] = lottery_processes[winner_pos].upper_bound_tickets[t_pos]; //Add the winner's upper bound tickets to the process that carries the most tickets.
-						lottery_processes[most_tickets_pos].num_of_tickets++; //Increment the number of tickets the receiving process has.
-						lottery_processes[winner_pos].lower_bound_tickets[t_pos] = 0; //Empty the lower ticket range of the winning process at this position.
-						lottery_processes[winner_pos].upper_bound_tickets[t_pos] = 0; //Empty the upper ticket range of the winning process at this position.
-					}
-					else if (lottery_processes[winner_pos].lower_bound_tickets[t_pos] == 0 && lottery_processes[winner_pos].upper_bound_tickets[t_pos] != 0)
-					{
-						lottery_processes[most_tickets_pos].lower_bound_tickets[t_pos] = lottery_processes[winner_pos].lower_bound_tickets[t_pos]; //Add the winner's lower bound tickets to the process that carries the most tickets.
-						lottery_processes[most_tickets_pos].upper_bound_tickets[t_pos] = lottery_processes[winner_pos].upper_bound_tickets[t_pos]; //Add the winner's upper bound tickets to the process that carries the most tickets.
-						lottery_processes[most_tickets_pos].num_of_tickets++; //Increment the number of tickets the receiving process has.
-						lottery_processes[winner_pos].lower_bound_tickets[t_pos] = 0; //Empty the lower ticket range of the winning process at this position.
-						lottery_processes[winner_pos].upper_bound_tickets[t_pos] = 0; //Empty the upper ticket range of the winning process at this position.
-					}
-				}
-			
-				lottery_processes[winner_pos].num_of_tickets = 0; //Empty the number of tickets of the winning process.	
-			}
-					
-			for (int pos = 0; pos < size; pos++) //From the beginning to the end of the list of processes...
-			{
-				if (lottery_processes[pos].arrival_time <= time && 
-					lottery_processes[pos].duration_left > 0) //Check if the process arrived on time and has yet to run.
-					{
-						//If a canidate has yet to be found OR 
-						//the currently running process is shorter in duration than the canidate process, then...
-						if (lottery_processes[pos].pid != lottery_processes[winner_pos].pid) 
-						{
-							lottery_processes[pos].waiting_time++; //Increment the waiting time of the processes that have arrived, but haven't yet run.
-							lottery_processes[pos].turnaround_time++; //Increment the turnaround time for the process.
-						}
-					}
-			}
-			
-			lottery_processes[winner_pos].duration_left--; //Decrement the time remaining for the process to finish its task.
-			lottery_processes[winner_pos].turnaround_time++; //Increment the turnaround time for the process.
-		}
-		else
-		{
-			for (int pos = 0; pos < size; pos++) //From the beginning to the end of the list of processes...
-			{
-				if (lottery_processes[pos].arrival_time <= time && 
-					lottery_processes[pos].duration_left > 0) //Check if the process arrived on time and has yet to run.
-					{
-						//If a canidate has yet to be found OR 
-						//the currently running process is shorter in duration than the canidate process, then...
-						if (lottery_processes[pos].pid != lottery_processes[winner_pos].pid) 
-						{
-							lottery_processes[pos].waiting_time++; //Increment the waiting time of the processes that have arrived, but haven't yet run.
-							lottery_processes[pos].turnaround_time++; //Increment the turnaround time for the process.
-						}
-					}
-			}
-			
-			lottery_processes[winner_pos].duration_left--; //Decrement the time remaining for the process to finish its task.
-			lottery_processes[winner_pos].turnaround_time++; //Increment the turnaround time for the process.
-		}
-		
-		/*if ((*lottery_processes)[winner_pos].duration_left < 0)
-		{
-			printf("HERE!!!!!\n");
-			printf("(*lottery_processes)[%d].burst_duration = %d\n", winner_pos, (*lottery_processes)[winner_pos].burst_duration);
-			printf("processes_left = %d\n", processes_left);
-		}*/
-		
-		//printf("(*lottery_processes)[%d].duration_left = %d\n", winner_pos, (*lottery_processes)[winner_pos].duration_left);
+	return winning_pos;
+}
 
-		time++; //Increment the time.
+void LotteryScheduling(Process *processes, int size, int random_seed)
+{
+	AlgorithmOverhead *overhead = malloc(sizeof(AlgorithmOverhead));
+	overhead->size = size;
+	overhead->processes_left = size;
+	overhead->time = 1;
+	overhead->option = 4;
+	overhead->current_pos = findProcess(processes, overhead);
+	
+	srand(random_seed);
+	overhead->winning_ticket = rand();
+	
+	while (overhead->processes_left > 0)
+	{
+		if (processes[overhead->current_pos].duration_left <= 0)
+		{
+			passTickets(processes, overhead);
+			overhead->current_pos = switchProcesses(processes, overhead);
+		}
+		
+		overhead->time++;
+		processes[overhead->current_pos].duration_left--;
 	}
+	
+	free(overhead);
+	overhead = NULL;
+}
+
+void printAlgorithmOverhead(AlgorithmOverhead *overhead)
+{
+	printf("overhead->current_pos = %d\n", overhead->current_pos);
+	printf("overhead->size = %d\n", overhead->size);
+	printf("overhead->time = %d\n", overhead->time);
+	printf("overhead->winning_ticket = %d\n", overhead->winning_ticket);
+	printf("overhead->processes_left = %d\n", overhead->processes_left);
+	printf("overhead->option = %d\n", overhead->option);
 }
