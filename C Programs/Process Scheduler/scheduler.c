@@ -41,7 +41,7 @@ int main(int argc, char** argv)
 		data[pos].last_runtime = 0;
 		data[pos].num_of_tickets = 0;
 		data[pos].lower_bound_tickets = malloc(sizeof(int) * overhead->size); //Allocate memory for the ticket list.
-		data[pos].upper_bound_tickets = malloc(sizeof(int) * overhead->size); //Alocate memory for the ticket list. 
+		data[pos].upper_bound_tickets = malloc(sizeof(int) * overhead->size); //Alocate memory for the ticket list.
 		
 		for (int t_pos = 0; t_pos < overhead->size; t_pos++)
 		{
@@ -493,6 +493,9 @@ void FCFS(Process *processes, SchedulerOverhead *overhead)
 		overhead->time++; //Increment the time.
 		processes[overhead->current_pos].duration_left--; //Decrement the workload.
 	}
+	
+	free(overhead);
+	overhead = NULL;
 }
 
 void SJF(Process *processes, SchedulerOverhead *overhead, int preempt)
@@ -572,6 +575,9 @@ void PriorityScheduling(Process *processes, SchedulerOverhead *overhead)
 		overhead->time++; //Increment the time.
 		processes[overhead->current_pos].duration_left--; //Decrement the time remaining for the process to finish its task.
 	}
+	
+	free(overhead);
+	overhead = NULL;
 }
 
 int findWinningTicket(Process *process, SchedulerOverhead *overhead)
@@ -614,4 +620,17 @@ void LotteryScheduling(Process *processes, SchedulerOverhead *overhead)
 		overhead->time++;
 		processes[overhead->current_pos].duration_left--;
 	}
+	
+	free(overhead);
+	overhead = NULL;
+}
+
+void printAlgorithmOverhead(AlgorithmOverhead *overhead)
+{
+	printf("overhead->current_pos = %d\n", overhead->current_pos);
+	printf("overhead->size = %d\n", overhead->size);
+	printf("overhead->time = %d\n", overhead->time);
+	printf("overhead->winning_ticket = %d\n", overhead->winning_ticket);
+	printf("overhead->processes_left = %d\n", overhead->processes_left);
+	printf("overhead->option = %d\n", overhead->option);
 }
