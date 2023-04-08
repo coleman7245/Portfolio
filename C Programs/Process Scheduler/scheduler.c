@@ -436,6 +436,9 @@ void FCFS(Process *processes, SchedulerOverhead *overhead)
 		overhead->time++; //Increment the time.
 		processes[overhead->current_pos].duration_left--; //Decrement the workload.
 	}
+	
+	free(overhead);
+	overhead = NULL;
 }
 
 void SJF(Process *processes, SchedulerOverhead *overhead, int preempt)
@@ -507,6 +510,9 @@ void PriorityScheduling(Process *processes, SchedulerOverhead *overhead)
 		overhead->time++; //Increment the time.
 		processes[overhead->current_pos].duration_left--; //Decrement the time remaining for the process to finish its task.
 	}
+	
+	free(overhead);
+	overhead = NULL;
 }
 
 int findWinningTicket(Process *process, SchedulerOverhead *overhead)
@@ -544,4 +550,17 @@ void LotteryScheduling(Process *processes, SchedulerOverhead *overhead)
 		overhead->time++;
 		processes[overhead->current_pos].duration_left--;
 	}
+	
+	free(overhead);
+	overhead = NULL;
+}
+
+void printAlgorithmOverhead(AlgorithmOverhead *overhead)
+{
+	printf("overhead->current_pos = %d\n", overhead->current_pos);
+	printf("overhead->size = %d\n", overhead->size);
+	printf("overhead->time = %d\n", overhead->time);
+	printf("overhead->winning_ticket = %d\n", overhead->winning_ticket);
+	printf("overhead->processes_left = %d\n", overhead->processes_left);
+	printf("overhead->option = %d\n", overhead->option);
 }

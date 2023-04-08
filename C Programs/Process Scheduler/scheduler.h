@@ -14,6 +14,7 @@ int readFile(FILE *input_file, SchedulerOverhead *overhead, Process **processes)
 void printProcessInfo(Process *processes, int size, int option); //Prints the process information specific to this assignment in stdout.
 int findNewLines(FILE *open_file); //Helper function to find the byte size of a file.
 int displayMenu(Process **processes, SchedulerOverhead *overhead); //Displays a menu for the end user.
+
 void FCFS(Process *processes, SchedulerOverhead *overhead); //Schedules the list of processes as first-come, first-serve.
 void SJF(Process *processes, SchedulerOverhead *overhead, int preempt);
 void PriorityScheduling(Process *processes, SchedulerOverhead *overhead); //Schedules the list of processes according to their individual priority.
