@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 		printf("Read of file failed!\n");  //Print the error message.
 		return 0; //Return false;
 	}
-
+  
 	if (!displayMenu(data, overhead)) //If the menu wasn't displayed, then...
 	{
 		printf("Failed to display menu!\n"); //Print the error message.
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 	data = NULL; //Set the pointer to null.
 	SchedulerOverheadDecon(overhead); //Free the memory allocated for the overhead.
 	overhead = NULL; //Set the pointer to null.
-
+  
 	return 1; //If everything performed accordingly, return true.
 }
 
@@ -80,6 +80,7 @@ int readFile(FILE *input_file, SchedulerOverhead *overhead, Process **processes)
 				else
 				{
 					printf("Read of file failed!\n"); //Print the error message.
+          
 					return 0; //Return false, indicating failure.
 				}
 			}
@@ -404,12 +405,12 @@ int switchProcesses(Process *processes, SchedulerOverhead *overhead)
 	int new_pos = findProcess(processes, overhead);
 	processes[overhead->current_pos].turnaround_time = overhead->time - processes[overhead->current_pos].arrival_time;
 	overhead->processes_left--; //Decrement the number of processes left to run.
-
+  
 	if (overhead->option == 4)
 	{
 		passTickets(processes, overhead);
 	}
-
+  
 	return new_pos;
 }
 
@@ -431,6 +432,9 @@ void FCFS(Process *processes, SchedulerOverhead *overhead)
 		overhead->time++; //Increment the time.
 		processes[overhead->current_pos].duration_left--; //Decrement the workload.
 	}
+	
+	free(overhead);
+	overhead = NULL;
 }
 
 void SJF(Process *processes, SchedulerOverhead *overhead, int preempt)
@@ -502,6 +506,9 @@ void PriorityScheduling(Process *processes, SchedulerOverhead *overhead)
 		overhead->time++; //Increment the time.
 		processes[overhead->current_pos].duration_left--; //Decrement the time remaining for the process to finish its task.
 	}
+	
+	free(overhead);
+	overhead = NULL;
 }
 
 int findWinningTicket(Process *process, SchedulerOverhead *overhead)
@@ -514,7 +521,7 @@ int findWinningTicket(Process *process, SchedulerOverhead *overhead)
 				return 1;
 			}
 	}
-
+  
 	return 0;
 }
 
@@ -539,4 +546,17 @@ void LotteryScheduling(Process *processes, SchedulerOverhead *overhead)
 		overhead->time++;
 		processes[overhead->current_pos].duration_left--;
 	}
+	
+	free(overhead);
+	overhead = NULL;
+}
+
+void printAlgorithmOverhead(AlgorithmOverhead *overhead)
+{
+	printf("overhead->current_pos = %d\n", overhead->current_pos);
+	printf("overhead->size = %d\n", overhead->size);
+	printf("overhead->time = %d\n", overhead->time);
+	printf("overhead->winning_ticket = %d\n", overhead->winning_ticket);
+	printf("overhead->processes_left = %d\n", overhead->processes_left);
+	printf("overhead->option = %d\n", overhead->option);
 }

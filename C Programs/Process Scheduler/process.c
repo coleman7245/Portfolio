@@ -7,7 +7,7 @@
 Process* ProcessInit(int size)
 {
 	Process *process = malloc(sizeof(Process)); //Allocate memory for a process according to the size.
-
+  
 	if (process == NULL)
 	{
 		return NULL;
