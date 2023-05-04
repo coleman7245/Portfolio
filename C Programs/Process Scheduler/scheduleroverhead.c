@@ -7,14 +7,14 @@
 SchedulerOverhead* SchedulerOverheadInit(int current_pos, int size, int time, int winning_ticket, int processes_left, int option, int random_seed, int highest_ticket, int lowest_ticket)
 {
 	SchedulerOverhead *overhead = malloc(sizeof(SchedulerOverhead)); //Allocate memory for the scheduler overhead according to the given size.
-	
+
 	if (overhead == NULL)
 	{
 		return NULL;
 	}
-	
+
 	initializeSchedulerOverhead(overhead, current_pos, size, time, winning_ticket, processes_left, option, random_seed, highest_ticket, lowest_ticket); //Set all the variables of the scheduler overhead.
-	
+
 	return overhead; //Return the scheduler overhead pointer.
 }
 
