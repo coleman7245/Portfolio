@@ -7,15 +7,15 @@ all: $(EXE)
 
 processscheduler: $(OBJECTFILES1)
 	$(C) $(OBJECTFILES1) -o $(EXE)
-	
+
 process.o: process.c process.h
 	$(C) $(CFLAGS) process.c
-	
+
 scheduleroverhead.o: scheduleroverhead.c scheduleroverhead.h
 	$(C) $(CFLAGS) scheduleroverhead.c
 
 scheduler.o: scheduler.c scheduler.h
 	$(C) $(CFLAGS) scheduler.c
 
-clean: 
+clean:
 	rm -f *.o *~ processscheduler

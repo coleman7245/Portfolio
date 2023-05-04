@@ -21,7 +21,7 @@ typedef struct
 	int num_of_tickets; //The total number of tickets the process holds.
 	int *upper_bound_tickets; //The upper bound values for each ticket.
 	int *lower_bound_tickets; //The lower bound values for each ticket.
-	
+
 } Process; //Struct for storing process information.
 
 Process* ProcessInit(int size); //Allocates memory for a process.

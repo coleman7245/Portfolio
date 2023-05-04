@@ -7,32 +7,32 @@
 Process* ProcessInit(int size)
 {
 	Process *process = malloc(sizeof(Process)); //Allocate memory for a process according to the size.
-	
+
 	if (process == NULL)
 	{
 		return NULL;
 	}
-	
+
 	process->lower_bound_tickets = malloc(size * sizeof(int));
-	
+
 	if (process->lower_bound_tickets == NULL)
 	{
 		free(process);
 		return NULL;
 	}
-	
+
 	process->upper_bound_tickets = malloc(size * sizeof(int));
-	
+
 	if (process->upper_bound_tickets == NULL)
 	{
 		free(process->lower_bound_tickets);
 		free(process);
 		return NULL;
 	}
-	
+
 	initializeProcess(process, size); //Set the variables of the process.
 	initializeTickets(process, size); //Set the ticket values.
-	
+
 	return process; //Return the process pointer.
 }
 
