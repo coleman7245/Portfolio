@@ -15,65 +15,104 @@ width: 100%;
 min-height: 100vh; 
 min-width: 100vw; 
 margin: 0;">
-<div class="navbar">
-    <a href="../pages/index.html">Home</a>
-        <div class="dropdown">
-            <button class="dropdown-btn">Games
-                <i class="game-dropdown"></i>
-            </button>
-            <div class="game-list">
-                <a href="../pages/game1.html">Breath of Fire 2</a>
-                <a href="../pages/game2.html">Castlevania: Symphony of the Night</a>
-                <a href="../pages/game3.html">Final Fantasy Tactics</a>
+    <div class="navbar">
+        <a href="../pages/index.html">Home</a>
+            <div class="dropdown">
+                <button class="dropdown-btn">Games
+                    <i class="game-dropdown"></i>
+                </button>
+                <div class="game-list">
+                    <a href="../pages/game1.html">Breath of Fire 2</a>
+                    <a href="../pages/game2.html">Castlevania: Symphony of the Night</a>
+                    <a href="../pages/game3.html">Final Fantasy Tactics</a>
+                </div>
             </div>
-        </div>
-    <a href="../pages/game1.html">Why I Love Them</a>
-    <a href="../pages/game3.html">About</a>
-    <a href="../pages/links.html">Links</a>
-</div>
-    <table style="
-        width: 25%;
-        height: 25%;
+        <a href="../pages/giffun.html">GIF Fun</a>
+    </div>
+    <div class="table-and-pic">
+        <img Id="game3" class="game-banner" src="../images/fftimage01.webp">
+        <table style=
+        "width: 50%;
+        height: 50%;
+        background-color: black;
+        box-shadow: 0px 0px 10px white;
         text-align: center;
         border: 5px solid white;
-        display: flexbox;
         color: white;
-        margin: 10% auto 0 auto;
-        border-collapse: collapse;">
-        <caption style="padding: 0 40% 0 0;">Game Info</caption>
-        <thead>
-            <tr>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr style="border-bottom: 1px solid white;">
-                <td style="border-right: 1px solid white; padding: 0 10% 0 10%;">Publisher</td>
-                <td style=" padding: 0 10% 0 10%;">Square Co, Ltd.</td>
-            </tr>
-            <tr style="border-bottom: 1px solid white;">
-                <td style="border-right: 1px solid white; padding: 0 10% 0 10%;">Developer</td>
-                <td style=" padding: 0 10% 0 10%;">Squaresoft</td>
-            </tr>
-            <tr style="border-bottom: 1px solid white;">
-                <td style="border-right: 1px solid white; padding: 0 10% 0 10%;">Release Date</td>
-                <td style=" padding: 0 10% 0 10%;">1997</td>
-            </tr>
-            <tr style="border-bottom: 1px solid white;">
-                <td style="border-right: 1px solid white; padding: 0 10% 0 10%;">Platform</td>
-                <td style=" padding: 0 10% 0 10%;">Playstation (PSX)</td>
-            </tr>
-            <tr>
-                <td style="border-right: 1px solid white; padding: 0 10% 0 10%;">Genre</td>
-                <td style=" padding: 0 10% 0 10%;">Strategy Role-Playing Game</td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr>
-                <td></td>
-                <td></td>
-            </tr>
-        </tfoot>
-    </table>
+        border-collapse: collapse;
+        margin: 10% auto 0 auto;">
+            <caption class="table-caption" style="text-align:center"><b>Game Info</b></caption>
+            <thead>
+                <tr>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 5px solid white;">
+                    <td style="border-right: 5px solid white; padding: 0 10% 0 10%;">Publisher</td>
+                    <td style=" padding: 0 10% 0 10%;">Square Co, Ltd.</td>
+                </tr>
+                <tr style="border-bottom: 5px solid white;">
+                    <td style="border-right: 5px solid white; padding: 0 10% 0 10%;">Developer</td>
+                    <td style=" padding: 0 10% 0 10%;">Squaresoft</td>
+                </tr>
+                <tr style="border-bottom: 5px solid white;">
+                    <td style="border-right: 5px solid white; padding: 0 10% 0 10%;">Release Date</td>
+                    <td style=" padding: 0 10% 0 10%;">1997</td>
+                </tr>
+                <tr style="border-bottom: 5px solid white;">
+                    <td style="border-right: 5px solid white; padding: 0 10% 0 10%;">Platform</td>
+                    <td style=" padding: 0 10% 0 10%;">Playstation (PSX)</td>
+                </tr>
+                <tr>
+                    <td style="border-right: 5px solid white; padding: 0 10% 0 10%;">Genre</td>
+                    <td style=" padding: 0 10% 0 10%;">Strategy Role-Playing Game</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="forms-label">
+        <hr>
+        <p ID="forms-boxes" style="text-shadow: 0px 2px blue;">Forms</p>
+        <hr>
+    </div>
+    <div class="forms">
+        <fieldset class="game-vote">
+            <form action="#">
+                <legend class="legend">Vote for Your Favorite Game</legend>
+                <br>
+                <label for="BOF2">
+                    <input type="radio" name="BOF2" id="BOF2choice">
+                    Breath of Fire 2
+                </label>
+                <br>
+                <label for="BOF2">
+                    <input type="radio" name="BOF2" id="BOF2choice">
+                    Castlevania: SOTN
+                </label>
+                <br>
+                <label for="BOF2">
+                    <input type="radio" name="BOF2" id="BOF2choice">
+                    Final Fantasy Tactics
+                </label>
+                <br>
+                <br>
+                <button class="votebtn">Vote</button>
+            </form>
+        </fieldset>
+        <fieldset class="comment">
+            <form action="#">
+                <legend class="legend">Comment</legend><br>
+                <textarea name="comment" required></textarea><br><br>
+                <button class="commentbtn">Submit</button><br>
+            </form>
+        </fieldset>
+    </div>
 </body>
 </html>
