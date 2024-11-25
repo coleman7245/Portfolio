@@ -31,8 +31,8 @@
     margin: 0;
 }
 
-.nav-bar a::hover, .dropdown::hover .dropdown-btn {
-    background-color: red;
+.navbar a:hover, .dropdown:hover .dropdown-btn {
+    background-color: blue;
 }
 
 .game-list {
@@ -54,9 +54,135 @@
 }
 
 .game-list a:hover {
-    background-color: whitesmoke;
+    background-color: blue;
 }
 
 .dropdown:hover .game-list {
     display: block;
+}
+
+#GIFTitle {
+    background: black;
+    border: 5px solid white;
+    box-shadow: 0px 0px 10px white;
+    text-shadow: 0px 2px blue;
+    width: 75%;
+    margin: 5% auto 5% auto;
+    animation: Titles 2s;
+}
+
+#GIFMain-Title {
+    text-align:center; 
+    color:rgba(255, 255, 255, 1);
+}
+
+.game-vote {
+    color: white;
+    background: black;
+    border: 5px solid white;
+    box-shadow: 0px 0px 10px white;
+    text-shadow: 0px 2px blue;
+    width: 20%;
+    margin: 5% auto 5% auto;
+}
+
+.legend {
+    font-size: 16pt;
+    text-shadow: 
+}
+
+.votebtn {
+    border-radius: 5px;
+}
+
+@keyframes Titles{
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+}
+
+.forms {
+    display:flex; 
+    flex-wrap:wrap; 
+    flex-direction:row; 
+    justify-content: space-evenly;
+}
+
+.sotngif {
+    transition: transform 10s;
+}
+
+.sotngif:hover {
+    transform: rotate(360deg);
+}
+
+.comment {
+    color: white;
+    background: black;
+    border: 5px solid white;
+    box-shadow: 0px 0px 10px white;
+    text-shadow: 0px 2px blue;
+    width: 25%;
+    margin: 5% auto 5% auto;
+}
+
+#commentbox {
+    width: 25cqw;
+    height: 25cqh;
+}
+
+.commentbtn {
+    border-radius: 5px;
+}
+
+.table-caption {
+    background: black;
+    border: 5px solid white;
+    border-bottom: 1px solid white;
+    box-shadow: 0px 0px 10px white;
+    text-shadow: 0px 2px blue;
+}
+
+.forms-label > hr {
+    border: 5px solid black;
+    box-shadow: 0px 0px 5px 5px white;
+    z-index: -1;
+}
+
+#forms-boxes {
+    text-align:center;
+    font-family:'Times New Roman', Times, serif;
+    color: white;
+    text-shadow: 0px 2px black;
+    font-size: 30px;
+}
+
+.table-and-pic {
+    display:flex; 
+    flex-wrap:wrap; 
+    flex-direction:row; 
+    justify-content: space-evenly;
+    margin: 0 0 5% 0;
+}
+
+.game-banner {
+    width:350px; 
+    height:350px; 
+    border-radius:10px;
+    box-shadow:0px 0px 10px white;
+    margin: 5% auto 0 auto;
+}
+
+.text-box {
+    background: black;
+    border: 5px solid white;
+    box-shadow: 0px 0px 10px white;
+    text-shadow: 0px 2px blue;
+    text-align:center; 
+    color:rgba(255, 255, 255, 1);
+    width: 75%;
+    margin: 0 auto;
+}
+
+#alucard-spin-text {
+    margin: 0 auto 5% auto;
 }
