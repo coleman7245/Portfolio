@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to My Favorite Games Sanctuary!</title>
+    <style>
+        body {
+            background-image: linear-gradient(black, grey);
+            background-size: cover;
+            background-repeat: no-repeat;
+            height: 100%;
+            width: 100%;
+            min-height: 100vh;
+            min-width: 100vw;
+            margin: 0;
+        }
+        #Main-Title {
+            text-align:center; 
+            color:rgba(255, 255, 255, 1);
+        }
+        #Subtitle {
+            text-align:center; 
+            color:rgba(255, 255, 255, 1);
+        }
+        .game-card {
+            width:200px; 
+            height:200px; 
+            border-radius:10px;
+            box-shadow:2px 2px 2px black; 
+            margin: 25% auto 0 auto;
+        }
+        #Game-Cards {
+            display: flex; 
+            justify-content:space-evenly; 
+            flex-wrap: wrap; 
+            flex-direction:row;
+        }
+        #game1 {
+            transition: transform 0.4s;
+        }
+        #game1:hover {
+            transform: scale(1.3);
+        }
+        #game2 {
+            transition: transform 0.4s;
+        }
+        #game2:hover {
+            transform: scale(1.3);
+        }
+        #game3 {
+            transition: transform 0.4s;
+        }
+        #game3:hover {
+            transform: scale(1.3);
+        }
+        #Titles {
+            background: black;
+            border: 5px solid white;
+            box-shadow: 0px 0px 10px white;
+            text-shadow: 0px 2px blue;
+            width: 75%;
+            margin: 5% auto 5% auto;
+            animation: Titles 2s;
+        }
+        @keyframes Titles{
+            0% {opacity: 0;}
+            100% {opacity: 1;}
+        }
+        #ToC-Text {
+            text-align:center;
+            font-family:'Times New Roman', Times, serif;
+            color: white;
+            text-shadow: 0px 2px black;
+            font-size: 30px;
+        }
+        #Table-of-Contents-Label > hr {
+            border: 5px solid black;
+            box-shadow: 0px 0px 5px 5px white;
+            z-index: -1;
+        }
+    </style>
+    <link rel="stylesheet" href="../styles/styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="../pages/index.html">Home</a>
+            <div class="dropdown">
+                <button class="dropdown-btn">Games
+                    <i class="game-dropdown"></i>
+                </button>
+                <div class="game-list">
+                    <a href="../pages/game1.html">Breath of Fire 2</a>
+                    <a href="../pages/game2.html">Castlevania: Symphony of the Night</a>
+                    <a href="../pages/game3.html">Final Fantasy Tactics</a>
+                </div>
+            </div>
+        <a href="../pages/game1.html">Why I Love Them</a>
+        <a href="../pages/game3.html">About</a>
+        <a href="../pages/links.html">Links</a>
+    </div>
+    <div Id="Titles">
+        <h1 Id="Main-Title">Welcome to My Favorite Video Games Sanctuary!</h1>
+        <h2 Id="Subtitle">Live, Love, and Game On!</h2>
+    </div>
+    <div Id="Table-of-Contents-Label">
+        <p ID="ToC-Text" style="text-shadow: 0px 2px blue;">Table of Contents</p>
+        <hr>
+    </div>
+    <div Id="Game-Cards">
+            <a href="../pages/game1.html" target="_self"><img Id="game1" class="game-card" src="../images/bof2image00.jpg"></a>
+            <a href="../pages/game2.html" target="_self"><img Id="game2" class="game-card" src="../images/castlevaniasotnimage00.webp"></a>
+            <a href="../pages/game3.html" target="_self"><img Id="game3" class="game-card" src="../images/fftimage01.webp"></a>
+    </div>
+</body>
+</html>
